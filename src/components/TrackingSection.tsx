@@ -2,6 +2,7 @@ import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import { useNavigate } from "react-router-dom";
 
 const TrackingSection = () => {
   const [trackingId, setTrackingId] = useState('');
@@ -23,6 +24,7 @@ const TrackingSection = () => {
   } | null>(null);
 
   const handleTracking = () => {
+    navigate("/tracked-item")
     if (trackingId.trim()) {
       // Setting the result including the new fields
       setTrackingResult({
@@ -34,6 +36,8 @@ const TrackingSection = () => {
       });
     }
   };
+
+  const navigate = useNavigate()
 
   return (
     <section className="py-16 bg-gray-50">
@@ -48,7 +52,7 @@ const TrackingSection = () => {
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
               <input
                 type="text"
-                placeholder="Enter Tracking ID (e.g., TRK123456789)"
+                placeholder="Enter Tracking ID (e.g., EECS123456789)"
                 value={trackingId}
                 onChange={(e) => setTrackingId(e.target.value)}
                 className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
