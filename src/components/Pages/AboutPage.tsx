@@ -78,7 +78,7 @@ const AboutPage = () => {
                         <div data-aos="fade-right" data-aos-delay="800">
                             <h2 className="text-3xl font-bold text-blue-900 mb-6">Our Story</h2>
                             <p className="text-gray-600 mb-6">
-                                Founded in 2010, LogiTrans began as a small local delivery service with a big vision: to revolutionize how businesses handle their logistics needs. Over the years, we've grown into a global network of logistics professionals dedicated to moving your business forward.
+                                Founded in 2010, Emerald Express began as a small local delivery service with a big vision: to revolutionize how businesses handle their logistics needs. Over the years, we've grown into a global network of logistics professionals dedicated to moving your business forward.
                             </p>
                             <p className="text-gray-600 mb-6">
                                 Today, we serve thousands of businesses worldwide, from small startups to Fortune 500 companies, providing comprehensive logistics solutions that drive growth and success. Our commitment to excellence and customer satisfaction has made us a trusted partner in the logistics industry.
@@ -198,7 +198,7 @@ const AboutPage = () => {
             <FAQ />
             <section className="py-16 bg-blue-900 text-white">
                 <div className="container mx-auto px-6 text-center">
-                    <h2 className="text-3xl max-md:text-2xl font-bold mb-4">Ready to Experience the LogiTrans Difference?</h2>
+                    <h2 className="text-3xl max-md:text-2xl font-bold mb-4">Ready to Experience the Emerald Express Difference?</h2>
                     <p className="text-xl max-md:text-[17px] text-blue-100 mb-8 max-w-3xl mx-auto">
                         Join thousands of satisfied customers who trust us with their logistics needs. Let's discuss how we can help your business grow.
                     </p>

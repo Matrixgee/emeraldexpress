@@ -49,7 +49,7 @@ const Footer = () => {
         </div>
         
         <div className="border-t border-blue-800 mt-8 pt-4 text-center text-blue-200">
-          <p>&copy; {copy} LogiTrans. All rights reserved.</p>
+          <p>&copy; {copy} Emerald Express. All rights reserved.</p>
         </div>
       </div>
     </footer>
