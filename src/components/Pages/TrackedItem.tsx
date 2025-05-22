@@ -7,12 +7,12 @@ const TrackedItem = () => {
             <div className="bg-white border-2 border-black w-full h-full">
                 <div className="w-full h-[43%] border-b-2 border-black flex max-lg:flex-col">
                     <div className="h-full w-[30%] max-lg:border-b-2 max-lg:border-r-0 max-lg:w-full max-lg:justify-center flex items-center border-r-2 border-black">
-                        <img src={bg} alt="" className="max-lg:w-max max-lg:h-[50px]" />
+                        <img src={bg} alt="" className="max-lg:w-max max-lg:h-[40px]" />
                     </div>
                     <div className="h-full w-[40%] max-lg:w-full max-lg:border-b-2 max-lg:border-r-0 border-r-2 border-black p-4 flex flex-col justify-center items-center">
                         <img src={bar} alt="" />
-                        <div className="font-mono text-xl">EECS084196421</div>
-                        <div className="text-2xl">Accounts Copy</div>
+                        <div className="font-mono text-[17px]">EECS084196421</div>
+                        <div className="text-xl">Accounts Copy</div>
                     </div>
                     <div className="h-full w-[40%] max-lg:w-full max-lg:h-[450px] flex flex-col">
                         <div className="w-full h-1/3 flex border-b-2 border-black">
