@@ -85,14 +85,7 @@ const [showPassword, setShowPassword] = useState(false);
               </div>
             </div>
 
-            <div className="flex items-center justify-between">
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  className="w-4 h-4 cursor-pointer text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                />
-                <span className="ml-2 text-sm text-gray-600">Remember me</span>
-              </label>
+            <div className="flex items-center justify-end">
               <button
                 type="button"
                 className="text-sm text-blue-600 hover:text-blue-500 hover:underline cursor-pointer"
