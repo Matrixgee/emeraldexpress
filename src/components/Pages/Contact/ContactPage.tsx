@@ -4,7 +4,6 @@ import ContactForm from "./ContactForm";
 const ContactPage = () => {
   return (
     <div className='overflow-x-hidden'>
-      {/* Contact Hero */}
       <section className="bg-blue-900 text-white py-20 pt-33"> 
         <div className="container mx-auto px-6">
           <div className="text-center">

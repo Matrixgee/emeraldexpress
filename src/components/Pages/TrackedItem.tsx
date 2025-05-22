@@ -23,7 +23,7 @@ const TrackedItem = () => {
                             <div className="w-[40%] h-full border-r-2 border-black p-4 text-[16px] flex justify-center flex-col">
                                 <h5>Pickup time</h5>
                             </div>
-                            <div className="w-[30%] h-full border-r-2 border-black p-4 text-[16px] flex justify-center flex-col">
+                            <div className="w-[30%] h-full border-black p-4 text-[16px] flex justify-center flex-col">
                                 <h5>Delivery date:</h5>
                                 <p>2023-11-21</p>
                             </div>
@@ -36,7 +36,7 @@ const TrackedItem = () => {
                             <div className="w-[40%] h-full border-r-2 border-black p-4 text-[16px] flex justify-center flex-col">
                                 <h5>Destination:</h5>
                             </div>
-                            <div className="w-[30%] h-full border-r-2 border-black p-4 text-[16px] flex justify-center flex-col">
+                            <div className="w-[30%] h-full border-black p-4 text-[16px] flex justify-center flex-col">
                                 <h5>Courier</h5>
                                 <p>Emerald Express</p>
                             </div>
@@ -50,7 +50,7 @@ const TrackedItem = () => {
                                 <h5>Carrier reference No:</h5>
                                 <p className="max-sm:text-sm">EECS084196421</p>
                             </div>
-                            <div className="w-[30%] h-full text-[16px] flex justify-center flex-col">
+                            <div className="w-[30%] p-4 h-full text-[16px] flex justify-center flex-col">
                                 <h5>Departure Time:</h5>
                                 <p>12:00pm</p>
                             </div>
