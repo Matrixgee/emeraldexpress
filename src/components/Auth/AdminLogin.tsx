@@ -125,7 +125,7 @@ const [showPassword, setShowPassword] = useState(false);
         {/* Footer */}
         <div className="text-center mt-8">
           <p className="text-blue-200 text-sm">
-            © {currentYear} LogiFlow. All rights reserved.
+            © {currentYear} Emerald Express. All rights reserved.
           </p>
         </div>
       </div>
