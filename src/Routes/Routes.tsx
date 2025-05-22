@@ -6,6 +6,7 @@ import ContactPage from "../components/Pages/Contact/ContactPage";
 import AdminLayout from "../components/Layouts/AdminLayout";
 import AdminLogin from "../components/Auth/AdminLogin";
 import AdminRegister from "../components/Auth/AdminRegister";
+import TrackedItem from "../components/Pages/TrackedItem";
 
 export const router = createBrowserRouter([
     {
@@ -39,5 +40,9 @@ export const router = createBrowserRouter([
                 element: <AdminRegister/>
             }
         ]
+    },
+    {
+        path:"tracked-item",
+        element: <TrackedItem/>
     }
 ])
