@@ -7,6 +7,10 @@ import AdminLayout from "../components/Layouts/AdminLayout";
 import AdminLogin from "../components/Auth/AdminLogin";
 import AdminRegister from "../components/Auth/AdminRegister";
 import TrackedItem from "../components/Pages/TrackedItem";
+import AdminDashboard from "../components/Admin/AdminDashboard";
+import Home from "../components/Admin/Home";
+import AllOrdersPage from "../components/Admin/AllOrdersPage";
+import CreateOrderPage from "../components/Admin/CreateOrderPage";
 
 export const router = createBrowserRouter([
     {
@@ -38,6 +42,24 @@ export const router = createBrowserRouter([
             {
                 path:"register",
                 element: <AdminRegister/>
+            }
+        ]
+    },
+    {
+        path:"admin-dashboard",
+        element: <AdminDashboard/>,
+        children:[
+            {
+                path:"home",
+                element:<Home/>
+            },
+            {
+                path:"orders",
+                element:<AllOrdersPage/>
+            },
+            {
+                path:"create",
+                element:<CreateOrderPage/>
             }
         ]
     },
