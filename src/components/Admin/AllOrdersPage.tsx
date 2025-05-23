@@ -1,79 +1,361 @@
-import { Filter, Search } from "lucide-react";
-import OrdersTable from "./OrdersTable";
+import { Search, Edit2, Trash2, X, Save } from "lucide-react";
 import { useState } from "react";
-import type { Order } from "../../types";
-import { useOutletContext } from "react-router-dom";
 
-interface AdminDashboardContext {
-  orders: Order[];
-  handleEditOrder: (order: Order) => void;
-  handleDeleteOrder: (id: string) => void;
-}
+type Order = {
+  id: string;
+  shipperName: string;
+  receiverName: string;
+  origin: string;
+  destination: string;
+  status: string;
+  departureDate: string;
+  expectedDelivery: string;
+  carrier: string;
+  totalFreight: string;
+};
 
 const AllOrdersPage = () => {
-  const { orders, handleEditOrder, handleDeleteOrder } = useOutletContext<AdminDashboardContext>();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const initialOrders: Order[] = [
+    {
+      id: 'ORD-001',
+      shipperName: 'John Smith',
+      receiverName: 'Alice Johnson',
+      origin: 'New York, USA',
+      destination: 'Los Angeles, USA',
+      status: 'In Transit',
+      departureDate: '2024-01-15',
+      expectedDelivery: '2024-01-18',
+      carrier: 'FastShip Express',
+      totalFreight: '$250.00'
+    },
+    {
+      id: 'ORD-002',
+      shipperName: 'Sarah Wilson',
+      receiverName: 'Mike Brown',
+      origin: 'Chicago, USA',
+      destination: 'Miami, USA',
+      status: 'Delivered',
+      departureDate: '2024-01-10',
+      expectedDelivery: '2024-01-14',
+      carrier: 'QuickMove Logistics',
+      totalFreight: '$180.00'
+    },
+    {
+      id: 'ORD-003',
+      shipperName: 'David Lee',
+      receiverName: 'Emma Davis',
+      origin: 'Seattle, USA',
+      destination: 'Denver, USA',
+      status: 'Pending',
+      departureDate: '2024-01-20',
+      expectedDelivery: '2024-01-23',
+      carrier: 'Reliable Transport',
+      totalFreight: '$320.00'
+    }
+  ];
 
-  const filteredOrders = orders.filter(order => {
+  const [orders, setOrders] = useState<Order[]>(initialOrders);
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [editingOrder, setEditingOrder] = useState<Order | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
+
+  const filteredOrders = orders.filter((order) => {
     const matchesSearch =
-      order.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.id.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
+      order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.shipperName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.receiverName.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus =
+      statusFilter === 'all' || order.status.toLowerCase() === statusFilter.toLowerCase();
     return matchesSearch && matchesStatus;
   });
 
-  return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">All Orders</h1>
-      </div>
+  const handleEdit = (order: Order) => {
+    setEditingOrder({ ...order });
+  };
 
-      {/* Search and Filters */}
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <input
-                type="text"
-                placeholder="Search orders by customer or ID..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-900 focus:border-transparent"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
+  const handleSaveEdit = () => {
+    if (!editingOrder) return;
+    setOrders(orders.map(order => order.id === editingOrder.id ? editingOrder : order));
+    setEditingOrder(null);
+  };
+
+  const handleDelete = (orderId: string) => {
+    setOrders(orders.filter(order => order.id !== orderId));
+    setShowDeleteConfirm(null);
+  };
+
+  const handleEditChange = (field: keyof Order, value: string) => {
+    if (!editingOrder) return;
+    setEditingOrder({ ...editingOrder, [field]: value });
+  };
+  return (
+    <div className="p-0">
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">All Orders</h2>
+        
+        {/* Filters */}
+        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <input
+              type="text"
+              placeholder="Search orders..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
           </div>
-          <div className="flex items-center gap-2">
-            <Filter className="text-gray-400 h-4 w-4" />
-            <select
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-900 focus:border-transparent"
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-            >
-              <option value="all">All Status</option>
-              <option value="Pending">Pending</option>
-              <option value="In Transit">In Transit</option>
-              <option value="Delivered">Delivered</option>
-            </select>
-          </div>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="all">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="in transit">In Transit</option>
+            <option value="delivered">Delivered</option>
+          </select>
         </div>
       </div>
 
       {/* Orders Table */}
-      <div className="bg-white rounded-lg shadow-lg">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900">
-            All Orders ({filteredOrders.length})
-          </h3>
+      <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order Details</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Route</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dates</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Freight</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredOrders.map((order) => (
+                <tr key={order.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4">
+                    <div>
+                      <div className="text-sm font-medium text-gray-900">{order.id}</div>
+                      <div className="text-sm text-gray-500">From: {order.shipperName}</div>
+                      <div className="text-sm text-gray-500">To: {order.receiverName}</div>
+                      <div className="text-sm text-gray-500">Carrier: {order.carrier}</div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="text-sm text-gray-900">{order.origin}</div>
+                    <div className="text-sm text-gray-500">↓</div>
+                    <div className="text-sm text-gray-900">{order.destination}</div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="text-sm text-gray-900">Dep: {order.departureDate}</div>
+                    <div className="text-sm text-gray-500">ETA: {order.expectedDelivery}</div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                      order.status === 'Delivered' ? 'bg-green-100 text-green-800' :
+                      order.status === 'In Transit' ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-red-100 text-red-800'
+                    }`}>
+                      {order.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900">{order.totalFreight}</td>
+                  <td className="px-6 py-4">
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleEdit(order)}
+                        className="text-blue-600 hover:text-blue-900 p-1 rounded"
+                        title="Edit order"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => setShowDeleteConfirm(order.id)}
+                        className="text-red-600 hover:text-red-900 p-1 rounded"
+                        title="Delete order"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-        <OrdersTable
-          orders={filteredOrders}
-          onEdit={handleEditOrder}
-          onDelete={handleDeleteOrder}
-          showActions={true}
-        />
       </div>
+
+      {/* Edit Modal */}
+      {editingOrder && (
+        <div className="fixed inset-0 bg-[#0000006f] flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">Edit Order</h3>
+              <button
+                onClick={() => setEditingOrder(null)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Order ID</label>
+                  <input
+                    type="text"
+                    value={editingOrder.id}
+                    onChange={(e) => handleEditChange('id', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                  <select
+                    value={editingOrder.status}
+                    onChange={(e) => handleEditChange('status', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="Pending">Pending</option>
+                    <option value="In Transit">In Transit</option>
+                    <option value="Delivered">Delivered</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Shipper Name</label>
+                  <input
+                    type="text"
+                    value={editingOrder.shipperName}
+                    onChange={(e) => handleEditChange('shipperName', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Receiver Name</label>
+                  <input
+                    type="text"
+                    value={editingOrder.receiverName}
+                    onChange={(e) => handleEditChange('receiverName', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Origin</label>
+                  <input
+                    type="text"
+                    value={editingOrder.origin}
+                    onChange={(e) => handleEditChange('origin', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Destination</label>
+                  <input
+                    type="text"
+                    value={editingOrder.destination}
+                    onChange={(e) => handleEditChange('destination', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Departure Date</label>
+                  <input
+                    type="date"
+                    value={editingOrder.departureDate}
+                    onChange={(e) => handleEditChange('departureDate', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Expected Delivery</label>
+                  <input
+                    type="date"
+                    value={editingOrder.expectedDelivery}
+                    onChange={(e) => handleEditChange('expectedDelivery', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Carrier</label>
+                  <input
+                    type="text"
+                    value={editingOrder.carrier}
+                    onChange={(e) => handleEditChange('carrier', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Total Freight</label>
+                  <input
+                    type="text"
+                    value={editingOrder.totalFreight}
+                    onChange={(e) => handleEditChange('totalFreight', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex justify-end space-x-3 mt-6">
+              <button
+                onClick={() => setEditingOrder(null)}
+                className="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveEdit}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center space-x-2"
+              >
+                <Save className="w-4 h-4" />
+                <span>Save Changes</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-[#0000006f] flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold mb-4">Confirm Delete</h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete order {showDeleteConfirm}? This action cannot be undone.
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => setShowDeleteConfirm(null)}
+                className="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDelete(showDeleteConfirm)}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
