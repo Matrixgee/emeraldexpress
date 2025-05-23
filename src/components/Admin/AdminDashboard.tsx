@@ -114,7 +114,7 @@ const AdminDashboard = () => {
             </div>
 
             <div className="flex-1 overflow-auto">
-                <main className="p-8">
+                <main className="p-4">
                     <Outlet
                         context={{
                             orders,
