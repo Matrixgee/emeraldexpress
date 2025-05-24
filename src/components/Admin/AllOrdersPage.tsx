@@ -8,6 +8,7 @@ type Order = {
   origin: string;
   destination: string;
   status: string;
+  stage: number;
   departureDate: string;
   expectedDelivery: string;
   carrier: string;
@@ -15,6 +16,14 @@ type Order = {
 };
 
 const AllOrdersPage = () => {
+  const statusStages = [
+    { stage: 0, name: "Order Placed", percentage: 0 },
+    { stage: 1, name: "Processing", percentage: 25 },
+    { stage: 2, name: "In Transit", percentage: 50 },
+    { stage: 3, name: "Out for Delivery", percentage: 75 },
+    { stage: 4, name: "Delivered", percentage: 100 }
+  ];
+
   const initialOrders: Order[] = [
     {
       id: 'ORD-001',
@@ -23,6 +32,7 @@ const AllOrdersPage = () => {
       origin: 'New York, USA',
       destination: 'Los Angeles, USA',
       status: 'In Transit',
+      stage: 2,
       departureDate: '2024-01-15',
       expectedDelivery: '2024-01-18',
       carrier: 'FastShip Express',
@@ -35,6 +45,7 @@ const AllOrdersPage = () => {
       origin: 'Chicago, USA',
       destination: 'Miami, USA',
       status: 'Delivered',
+      stage: 4,
       departureDate: '2024-01-10',
       expectedDelivery: '2024-01-14',
       carrier: 'QuickMove Logistics',
@@ -46,7 +57,8 @@ const AllOrdersPage = () => {
       receiverName: 'Emma Davis',
       origin: 'Seattle, USA',
       destination: 'Denver, USA',
-      status: 'Pending',
+      status: 'Processing',
+      stage: 1,
       departureDate: '2024-01-20',
       expectedDelivery: '2024-01-23',
       carrier: 'Reliable Transport',
@@ -59,6 +71,16 @@ const AllOrdersPage = () => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [editingOrder, setEditingOrder] = useState<Order | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
+
+  const getStatusFromStage = (stage: number) => {
+    const statusStage = statusStages.find(s => s.stage === stage);
+    return statusStage ? statusStage.name : 'Unknown';
+  };
+
+  const getStageFromStatus = (status: string) => {
+    const statusStage = statusStages.find(s => s.name === status);
+    return statusStage ? statusStage.stage : 0;
+  };
 
   const filteredOrders = orders.filter((order) => {
     const matchesSearch =
@@ -85,10 +107,46 @@ const AllOrdersPage = () => {
     setShowDeleteConfirm(null);
   };
 
-  const handleEditChange = (field: keyof Order, value: string) => {
+  const handleEditChange = (field: keyof Order, value: string | number) => {
     if (!editingOrder) return;
-    setEditingOrder({ ...editingOrder, [field]: value });
+    let updatedOrder = { ...editingOrder, [field]: value };
+    
+    // If status is changed, update the stage accordingly
+    if (field === 'status') {
+      updatedOrder.stage = getStageFromStatus(value as string);
+    }
+    // If stage is changed, update the status accordingly
+    if (field === 'stage') {
+      updatedOrder.status = getStatusFromStage(value as number);
+    }
+    
+    setEditingOrder(updatedOrder);
   };
+
+  const ProgressBar = ({ stage }: { stage: number }) => {
+    const currentStage = statusStages.find(s => s.stage === stage);
+    const percentage = currentStage ? currentStage.percentage : 0;
+    
+    return (
+      <div className="w-full">
+        <div className="flex justify-between text-xs text-gray-600 mb-1">
+          <span>{currentStage?.name}</span>
+          <span>{percentage}%</span>
+        </div>
+        <div className="w-full bg-gray-200 rounded-full h-2">
+          <div 
+            className={`h-2 rounded-full transition-all duration-300 ${
+              stage === 4 ? 'bg-green-500' : 
+              stage >= 2 ? 'bg-blue-500' : 
+              stage >= 1 ? 'bg-yellow-500' : 'bg-gray-400'
+            }`}
+            style={{ width: `${percentage}%` }}
+          ></div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="p-0">
       <div className="mb-6">
@@ -112,8 +170,10 @@ const AllOrdersPage = () => {
             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             <option value="all">All Status</option>
-            <option value="pending">Pending</option>
+            <option value="order placed">Order Placed</option>
+            <option value="processing">Processing</option>
             <option value="in transit">In Transit</option>
+            <option value="out for delivery">Out for Delivery</option>
             <option value="delivered">Delivered</option>
           </select>
         </div>
@@ -128,7 +188,7 @@ const AllOrdersPage = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order Details</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Route</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dates</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Progress</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Freight</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
@@ -154,13 +214,9 @@ const AllOrdersPage = () => {
                     <div className="text-sm text-gray-500">ETA: {order.expectedDelivery}</div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      order.status === 'Delivered' ? 'bg-green-100 text-green-800' :
-                      order.status === 'In Transit' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-red-100 text-red-800'
-                    }`}>
-                      {order.status}
-                    </span>
+                    <div className="w-32">
+                      <ProgressBar stage={order.stage} />
+                    </div>
                   </td>
                   <td className="px-6 py-4 text-sm font-medium text-gray-900">{order.totalFreight}</td>
                   <td className="px-6 py-4">
@@ -214,15 +270,17 @@ const AllOrdersPage = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Status Stage</label>
                   <select
-                    value={editingOrder.status}
-                    onChange={(e) => handleEditChange('status', e.target.value)}
+                    value={editingOrder.stage}
+                    onChange={(e) => handleEditChange('stage', parseInt(e.target.value))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
-                    <option value="Pending">Pending</option>
-                    <option value="In Transit">In Transit</option>
-                    <option value="Delivered">Delivered</option>
+                    {statusStages.map((stage) => (
+                      <option key={stage.stage} value={stage.stage}>
+                        Stage {stage.stage}: {stage.name} ({stage.percentage}%)
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -308,6 +366,14 @@ const AllOrdersPage = () => {
                     onChange={(e) => handleEditChange('totalFreight', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
+                </div>
+              </div>
+
+              {/* Progress Preview */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Progress Preview</label>
+                <div className="p-3 bg-gray-50 rounded-lg">
+                  <ProgressBar stage={editingOrder.stage} />
                 </div>
               </div>
             </div>
