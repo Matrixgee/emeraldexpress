@@ -1,5 +1,7 @@
 import { Search, Edit2, Trash2, X, Save } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "../config/axiosconfig";
+import toast from "react-hot-toast";
 
 type Order = {
   id: string;
@@ -24,53 +26,33 @@ const AllOrdersPage = () => {
     { stage: 4, name: "Delivered", percentage: 100 }
   ];
 
-  const initialOrders: Order[] = [
-    {
-      id: 'ORD-001',
-      shipperName: 'John Smith',
-      receiverName: 'Alice Johnson',
-      origin: 'New York, USA',
-      destination: 'Los Angeles, USA',
-      status: 'In Transit',
-      stage: 2,
-      departureDate: '2024-01-15',
-      expectedDelivery: '2024-01-18',
-      carrier: 'FastShip Express',
-      totalFreight: '$250.00'
-    },
-    {
-      id: 'ORD-002',
-      shipperName: 'Sarah Wilson',
-      receiverName: 'Mike Brown',
-      origin: 'Chicago, USA',
-      destination: 'Miami, USA',
-      status: 'Delivered',
-      stage: 4,
-      departureDate: '2024-01-10',
-      expectedDelivery: '2024-01-14',
-      carrier: 'QuickMove Logistics',
-      totalFreight: '$180.00'
-    },
-    {
-      id: 'ORD-003',
-      shipperName: 'David Lee',
-      receiverName: 'Emma Davis',
-      origin: 'Seattle, USA',
-      destination: 'Denver, USA',
-      status: 'Processing',
-      stage: 1,
-      departureDate: '2024-01-20',
-      expectedDelivery: '2024-01-23',
-      carrier: 'Reliable Transport',
-      totalFreight: '$320.00'
-    }
-  ];
 
-  const [orders, setOrders] = useState<Order[]>(initialOrders);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [editingOrder, setEditingOrder] = useState<Order | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
+  const [orders, setOrders] = useState<Order[]>([]);
+const [isLoading, setIsLoading] = useState<boolean>(true);
+const adminToken = localStorage.getItem("token");
+  const headers = {
+    headers: { Authorization: `Bearer ${adminToken}` },
+  }
+
+useEffect(() => {
+  const fetchOrders = async () => {
+    try {
+      const res = await axios.get<Order[]>("/getAllOrders", headers)
+      setOrders(res.data);
+      console.log(res.data)
+    } catch (error) {
+      console.error("Failed to fetch orders:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  fetchOrders();
+}, []);
 
   const getStatusFromStage = (stage: number) => {
     const statusStage = statusStages.find(s => s.stage === stage);
@@ -147,6 +129,9 @@ const AllOrdersPage = () => {
     );
   };
 
+
+
+
   return (
     <div className="p-0">
       <div className="mb-6">
@@ -179,8 +164,10 @@ const AllOrdersPage = () => {
         </div>
       </div>
 
-      {/* Orders Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+{
+  isLoading ? toast.loading("Loading Orders") :
+
+        <div className="bg-white rounded-lg shadow overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -243,6 +230,7 @@ const AllOrdersPage = () => {
           </table>
         </div>
       </div>
+}
 
       {/* Edit Modal */}
       {editingOrder && (
