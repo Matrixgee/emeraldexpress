@@ -9,12 +9,12 @@ interface Country {
 
 interface OrderFormData {
   shipperName: string;
-  shipperPhone: string;
+  shipperNumber: string;
   shipperAddress: string;
   shipperCountry: string;
   shipperEmail: string;
   receiverName: string;
-  receiverPhone: string;
+  receiverNumber: string;
   receiverAddress: string;
   receiverCountry: string;
   receiverEmail: string;
@@ -43,8 +43,8 @@ interface OrderFormData {
 type FormField = keyof OrderFormData;
 
 const defaultFormData: OrderFormData = {
-  shipperName: "", shipperPhone: "", shipperAddress: "", shipperCountry: "", shipperEmail: "",
-  receiverName: "", receiverPhone: "", receiverAddress: "", receiverCountry: "", receiverEmail: "",
+  shipperName: "", shipperNumber: "", shipperAddress: "", shipperCountry: "", shipperEmail: "",
+  receiverName: "", receiverNumber: "", receiverAddress: "", receiverCountry: "", receiverEmail: "",
   quantity: "", description: "", length: "", width: "", height: "", weight: "",
   totalFreight: "", packages: "", product: "", mode: "", paymentMode: "", origin: "", departureDate: "",
   destination: "", expectedDeliveryDate: "", pickupDate: "", pickupTime: "", carrier: "", comment: "",
@@ -181,8 +181,8 @@ const CreateOrderPage = () => {
               <input
                 type="phone"
                 name="shipperPhone"
-                value={formData.shipperPhone}
-                onChange={(val) => handleInputChange("shipperPhone", val.target.value)}
+                value={formData.shipperNumber}
+                onChange={(val) => handleInputChange("shipperNumber", val.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
@@ -256,8 +256,8 @@ const CreateOrderPage = () => {
               <input
                 type="tel"
                 name="receiverPhone"
-                value={formData.receiverPhone}
-                onChange={(val) => handleInputChange("receiverPhone", val.target.value)}
+                value={formData.receiverNumber}
+                onChange={(val) => handleInputChange("receiverNumber", val.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
@@ -599,13 +599,12 @@ const CreateOrderPage = () => {
           </div>
         </div>
 
-        {/* Submit Button */}
         <div className="flex justify-end space-x-4">
           <button
             type="button"
             onClick={() => setFormData({
-              shipperName: '', shipperPhone: '', shipperAddress: '', shipperCountry: '', shipperEmail: '',
-              receiverName: '', receiverPhone: '', receiverAddress: '', receiverCountry: '', receiverEmail: '',
+              shipperName: '', shipperNumber: '', shipperAddress: '', shipperCountry: '', shipperEmail: '',
+              receiverName: '', receiverNumber: '', receiverAddress: '', receiverCountry: '', receiverEmail: '',
               quantity: '', description: '', length: '', width: '', height: '', weight: '',
               totalFreight: '', packages: '', product: '', mode: '', paymentMode: '', origin: '', departureDate: '',
               destination: '', expectedDeliveryDate: '', pickupDate: '', pickupTime: '', carrier: '', comment: '',
