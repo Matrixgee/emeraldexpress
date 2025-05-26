@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import axios from "../config/axiosconfig";
 
 interface Country {
   country: string;
@@ -35,7 +36,6 @@ interface OrderFormData {
   pickupDate: string;
   pickupTime: string;
   carrier: string;
-  carrierReferenceNo: string;
   comment: string;
   stage: 0 | 1 | 2 | 3 | 4;
 }
@@ -47,7 +47,7 @@ const defaultFormData: OrderFormData = {
   receiverName: "", receiverPhone: "", receiverAddress: "", receiverCountry: "", receiverEmail: "",
   quantity: "", description: "", length: "", width: "", height: "", weight: "",
   totalFreight: "", packages: "", product: "", mode: "", paymentMode: "", origin: "", departureDate: "",
-  destination: "", expectedDeliveryDate: "", pickupDate: "", pickupTime: "", carrier: "", carrierReferenceNo: "", comment: "",
+  destination: "", expectedDeliveryDate: "", pickupDate: "", pickupTime: "", carrier: "", comment: "",
   stage: 0,
 };
 
@@ -85,6 +85,10 @@ const CreateOrderPage = () => {
     fetchCountries();
   }, []);
 
+ 
+
+
+
   const stageOptions = [
     { value: 0, label: "Order Placed", progress: 0 },
     { value: 1, label: "Processing", progress: 25 },
@@ -112,12 +116,32 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
 };
 
   const generateTrackingId = () => {
-    return 'TRK' + Date.now().toString().slice(-8) + Math.random().toString(36).substr(2, 4).toUpperCase();
+    return 'EECS' + Date.now().toString().slice(-8) + Math.random().toString(36).substr(2, 4).toUpperCase();
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [loading, setLoading] = useState(false)
+  const [trackingId, setTrackingId] = useState("")
+
+  const adminToken = localStorage.getItem("token")
+  const headers = {
+  headers: { Authorization: `Bearer ${adminToken}` },  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+      const loadingId = toast.loading("Creating Order...")
     e.preventDefault();
-    const trackingId = generateTrackingId();
+    try{
+      setLoading(true)
+      const res = await axios.post("/createOrder", formData, headers)
+      console.log(res)
+      toast.success("Order created Successfully")
+      setTrackingId(generateTrackingId())
+    }catch(error){
+      console.log(error)
+      toast.error("Error creating order, Please check and try again")
+    }finally{
+      setLoading(false)
+      toast.dismiss(loadingId)
+    }
 
     console.log("Order created:", {
       ...formData,
@@ -433,7 +457,7 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
               </select>
             </div>
             
-            {/* NEW STAGE FIELD */}
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Stage</label>
               <select
@@ -527,21 +551,8 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
                 required
               >
                 <option value="">Select Carrier</option>
-                <option value="FastShip Express">FastShip Express</option>
-                <option value="QuickMove Logistics">QuickMove Logistics</option>
-                <option value="Reliable Transport">Reliable Transport</option>
-                <option value="Global Freight">Global Freight</option>
+                <option value="Emerald Express">Emerald Express</option>
               </select>
-            </div>
-            <div className="md:col-span-2 lg:col-span-1">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Carrier Reference No</label>
-              <input
-                type="text"
-                name="carrierReferenceNo"
-                value={formData.carrierReferenceNo}
-                onChange={(val)=>handleInputChange("carrierReferenceNo",val.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
             </div>
             <div className="md:col-span-2 lg:col-span-3">
               <label className="block text-sm font-medium text-gray-700 mb-1">Comment</label>
@@ -596,7 +607,7 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
               receiverName: '', receiverPhone: '', receiverAddress: '', receiverCountry: '', receiverEmail: '',
               quantity: '', description: '', length: '', width: '', height: '', weight: '',
               totalFreight: '', packages: '', product: '', mode: '', paymentMode: '', origin: '', departureDate: '',
-              destination: '', expectedDeliveryDate: '', pickupDate: '', pickupTime: '', carrier: '', carrierReferenceNo: '', comment: '',
+              destination: '', expectedDeliveryDate: '', pickupDate: '', pickupTime: '', carrier: '',comment: '',
               stage: 0
             })}
             className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"

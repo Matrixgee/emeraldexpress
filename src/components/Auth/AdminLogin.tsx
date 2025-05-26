@@ -2,6 +2,9 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom"
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import logo from "../../assets/Logo.png"
+import axios from "../config/axiosconfig";
+import toast from "react-hot-toast";
+
 
 
 const AdminLogin = () => {
@@ -15,6 +18,8 @@ const [showPassword, setShowPassword] = useState(false);
     password: ''
   });
 
+  const [loading, setloading] = useState(false)
+
   const handleInputChange = (e:any) => {
     setFormData({
       ...formData,
@@ -22,8 +27,23 @@ const [showPassword, setShowPassword] = useState(false);
     });
   };
 
-  const handleSubmit = () => {
-    console.log('Login attempt:', formData);
+
+  const handleSubmit = async () => {
+
+const loadingId = toast.loading("Please wait...")
+try{
+  setloading(true)
+  const res = await axios.post("/login", formData)
+  console.log(res.data);
+  localStorage.setItem("token", res.data.data.token)
+  navigate("/admin-dashboard/home")
+  }catch(error){
+    console.log(error)
+    toast.error("Login failed")
+  }finally{
+    setloading(false)
+    toast.dismiss(loadingId)
+  }
   };
 
   const currentYear = new Date().getFullYear()
