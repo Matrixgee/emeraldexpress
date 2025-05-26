@@ -2,6 +2,7 @@ import bar from "../../assets/bar.png"
 import bg from "../../assets/Logo.png"
 
 const TrackedItem = () => {
+    
     return (
         <div className="bg-blue-900 w-full h-max lg:h-screen p-3 md:text-[18px]">
             <div className="bg-white border-2 border-black w-full h-full">
