@@ -1,7 +1,7 @@
 import { Search, Edit2, Trash2, X, Save } from "lucide-react";
 import { useEffect, useState } from "react";
 import axios from "../config/axiosconfig";
-import toast from "react-hot-toast";
+// import toast from "react-hot-toast";
 
 type Order = {
   id: number;
@@ -15,6 +15,7 @@ type Order = {
   expectedDelivery: string;
   carrier: string;
   totalFreight: string;
+  trackingId:string;
 };
 
 interface OrderResponse {
@@ -178,7 +179,7 @@ const AllOrdersPage = () => {
       </div>
 
       {isLoading ? (
-        toast.loading("Loading Orders")
+        <div>Loading Orders...</div>
       ) : (
         <div className="bg-white rounded-lg shadow overflow-hidden">
           <div className="overflow-x-auto">
@@ -211,7 +212,7 @@ const AllOrdersPage = () => {
                     <td className="px-6 py-4">
                       <div>
                         <div className="text-sm font-medium text-gray-900">
-                          {order.id}
+                          {order.trackingId}
                         </div>
                         <div className="text-sm text-gray-500">
                           From: {order.shipperName}
