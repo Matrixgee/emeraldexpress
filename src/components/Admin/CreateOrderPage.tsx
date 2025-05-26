@@ -85,7 +85,7 @@ const CreateOrderPage = () => {
     fetchCountries();
   }, []);
 
- 
+
 
 
 
@@ -104,16 +104,16 @@ const CreateOrderPage = () => {
     return stageMap[stage as 0 | 1 | 2 | 3 | 4] ?? 0;
   };
 
-const handleInputChange = (field: keyof OrderFormData, value: string) => {
-  setFormData(prev => ({
-    ...prev,
-    [field]: field === "stage" ? Number(value) : value,
-  }));
+  const handleInputChange = (field: keyof OrderFormData, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: field === "stage" ? Number(value) : value,
+    }));
 
-  if (errors[field as FormField]) {
-    setErrors(prev => ({ ...prev, [field]: undefined }));
-  }
-};
+    if (errors[field as FormField]) {
+      setErrors(prev => ({ ...prev, [field]: undefined }));
+    }
+  };
 
   const generateTrackingId = () => {
     return 'EECS' + Date.now().toString().slice(-8) + Math.random().toString(36).substr(2, 4).toUpperCase();
@@ -124,21 +124,22 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
 
   const adminToken = localStorage.getItem("token")
   const headers = {
-  headers: { Authorization: `Bearer ${adminToken}` },  }
+    headers: { Authorization: `Bearer ${adminToken}` },
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
-      const loadingId = toast.loading("Creating Order...")
+    const loadingId = toast.loading("Creating Order...")
     e.preventDefault();
-    try{
+    try {
       setLoading(true)
       const res = await axios.post("/createOrder", formData, headers)
       console.log(res)
       toast.success("Order created Successfully")
       setTrackingId(generateTrackingId())
-    }catch(error){
+    } catch (error) {
       console.log(error)
       toast.error("Error creating order, Please check and try again")
-    }finally{
+    } finally {
       setLoading(false)
       toast.dismiss(loadingId)
     }
@@ -149,7 +150,7 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
       progressPercentage: getProgressPercentage(formData.stage),
     });
 
-    
+
 
     toast.success(`Order created! Tracking ID: ${trackingId}`);
     setFormData(defaultFormData);
@@ -158,7 +159,7 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
   return (
     <div className="p-0">
       <h2 className="text-2xl font-bold text-gray-900 mb-6">Create New Order</h2>
-      
+
       <div className="space-y-8">
         {/* Shipper Details */}
         <div className="bg-white rounded-lg shadow p-6">
@@ -170,7 +171,7 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
                 type="text"
                 name="shipperName"
                 value={formData.shipperName}
-                onChange={(val)=>handleInputChange("shipperName", val.target.value)}
+                onChange={(val) => handleInputChange("shipperName", val.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
@@ -181,7 +182,7 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
                 type="phone"
                 name="shipperPhone"
                 value={formData.shipperPhone}
-                onChange={(val)=>handleInputChange("shipperPhone",val.target.value)}
+                onChange={(val) => handleInputChange("shipperPhone", val.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
@@ -192,7 +193,7 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
                 type="text"
                 name="shipperAddress"
                 value={formData.shipperAddress}
-                onChange={(val)=>handleInputChange("shipperAddress",val.target.value)}
+                onChange={(val) => handleInputChange("shipperAddress", val.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
@@ -227,7 +228,7 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
                 type="email"
                 name="shipperEmail"
                 value={formData.shipperEmail}
-                onChange={(val)=>handleInputChange("shipperEmail",val.target.value)}
+                onChange={(val) => handleInputChange("shipperEmail", val.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
@@ -245,7 +246,7 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
                 type="text"
                 name="receiverName"
                 value={formData.receiverName}
-                onChange={(val)=>handleInputChange("receiverName",val.target.value)}
+                onChange={(val) => handleInputChange("receiverName", val.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
@@ -256,7 +257,7 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
                 type="tel"
                 name="receiverPhone"
                 value={formData.receiverPhone}
-                onChange={(val)=>handleInputChange("receiverPhone",val.target.value)}
+                onChange={(val) => handleInputChange("receiverPhone", val.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
@@ -267,12 +268,12 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
                 type="text"
                 name="receiverAddress"
                 value={formData.receiverAddress}
-                onChange={(val)=>handleInputChange("receiverAddress",val.target.value)}
+                onChange={(val) => handleInputChange("receiverAddress", val.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
             </div>
-                <div>
+            <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Country
               </label>
@@ -302,7 +303,7 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
                 type="email"
                 name="receiverEmail"
                 value={formData.receiverEmail}
-                onChange={(val)=>handleInputChange("receiverEmail",val.target.value)}
+                onChange={(val) => handleInputChange("receiverEmail", val.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
@@ -320,7 +321,7 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
                 type="number"
                 name="quantity"
                 value={formData.quantity}
-                onChange={(val)=>handleInputChange("quantity",val.target.value)}
+                onChange={(val) => handleInputChange("quantity", val.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
@@ -332,7 +333,7 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
                 step="0.1"
                 name="weight"
                 value={formData.weight}
-                onChange={(val)=>handleInputChange("weight",val.target.value)}
+                onChange={(val) => handleInputChange("weight", val.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
@@ -344,7 +345,7 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
                 step="0.1"
                 name="length"
                 value={formData.length}
-                onChange={(val)=>handleInputChange("length",val.target.value)}
+                onChange={(val) => handleInputChange("length", val.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
@@ -356,7 +357,7 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
                 step="0.1"
                 name="width"
                 value={formData.width}
-                onChange={(val)=>handleInputChange("width",val.target.value)}
+                onChange={(val) => handleInputChange("width", val.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
@@ -368,7 +369,7 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
                 step="0.1"
                 name="height"
                 value={formData.height}
-                onChange={(val)=>handleInputChange("height",val.target.value)}
+                onChange={(val) => handleInputChange("height", val.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
@@ -378,7 +379,7 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
               <textarea
                 name="description"
                 value={formData.description}
-                onChange={(val)=>handleInputChange("description",val.target.value)}
+                onChange={(val) => handleInputChange("description", val.target.value)}
                 rows={3}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
@@ -397,7 +398,7 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
                 type="text"
                 name="totalFreight"
                 value={formData.totalFreight}
-                onChange={(val)=>handleInputChange("totalFreight",val.target.value)}
+                onChange={(val) => handleInputChange("totalFreight", val.target.value)}
                 placeholder="$0.00"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
@@ -409,7 +410,7 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
                 type="number"
                 name="packages"
                 value={formData.packages}
-                onChange={(val)=>handleInputChange("packages",val.target.value)}
+                onChange={(val) => handleInputChange("packages", val.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
@@ -420,7 +421,7 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
                 type="text"
                 name="product"
                 value={formData.product}
-                onChange={(val)=>handleInputChange("product",val.target.value)}
+                onChange={(val) => handleInputChange("product", val.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
@@ -430,7 +431,7 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
               <select
                 name="mode"
                 value={formData.mode}
-                onChange={(val)=>handleInputChange("mode",val.target.value)}
+                onChange={(val) => handleInputChange("mode", val.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               >
@@ -446,7 +447,7 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
               <select
                 name="paymentMode"
                 value={formData.paymentMode}
-                onChange={(val)=>handleInputChange("paymentMode",val.target.value)}
+                onChange={(val) => handleInputChange("paymentMode", val.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               >
@@ -456,14 +457,14 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
                 <option value="third-party">Third Party</option>
               </select>
             </div>
-            
+
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Stage</label>
               <select
                 name="stage"
                 value={formData.stage}
-                onChange={(val)=>handleInputChange("stage",val.target.value)}
+                onChange={(val) => handleInputChange("stage", val.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               >
@@ -474,14 +475,14 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
                 ))}
               </select>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Origin</label>
               <input
                 type="text"
                 name="origin"
                 value={formData.origin}
-                onChange={(val)=>handleInputChange("origin",val.target.value)}
+                onChange={(val) => handleInputChange("origin", val.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
@@ -492,7 +493,7 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
                 type="date"
                 name="departureDate"
                 value={formData.departureDate}
-                onChange={(val)=>handleInputChange("departureDate",val.target.value)}
+                onChange={(val) => handleInputChange("departureDate", val.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
@@ -503,7 +504,7 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
                 type="text"
                 name="destination"
                 value={formData.destination}
-                onChange={(val)=>handleInputChange("destination",val.target.value)}
+                onChange={(val) => handleInputChange("destination", val.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
@@ -514,7 +515,7 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
                 type="date"
                 name="expectedDeliveryDate"
                 value={formData.expectedDeliveryDate}
-                onChange={(val)=>handleInputChange("expectedDeliveryDate",val.target.value)}
+                onChange={(val) => handleInputChange("expectedDeliveryDate", val.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
@@ -525,7 +526,7 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
                 type="date"
                 name="pickupDate"
                 value={formData.pickupDate}
-                onChange={(val)=>handleInputChange("pickupDate",val.target.value)}
+                onChange={(val) => handleInputChange("pickupDate", val.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
@@ -536,7 +537,7 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
                 type="time"
                 name="pickupTime"
                 value={formData.pickupTime}
-                onChange={(val)=>handleInputChange("pickupTime",val.target.value)}
+                onChange={(val) => handleInputChange("pickupTime", val.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
@@ -546,7 +547,7 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
               <select
                 name="carrier"
                 value={formData.carrier}
-                onChange={(val)=>handleInputChange("carrier",val.target.value)}
+                onChange={(val) => handleInputChange("carrier", val.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               >
@@ -559,7 +560,7 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
               <textarea
                 name="comment"
                 value={formData.comment}
-                onChange={(val)=>handleInputChange("comment",val.target.value)}
+                onChange={(val) => handleInputChange("comment", val.target.value)}
                 rows={3}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Additional comments or special instructions..."
@@ -581,7 +582,7 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
               </span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-4">
-              <div 
+              <div
                 className="bg-gradient-to-r from-blue-500 to-blue-600 h-4 rounded-full transition-all duration-500 flex items-center justify-end pr-2"
                 style={{ width: `${getProgressPercentage(formData.stage)}%` }}
               >
@@ -607,7 +608,7 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
               receiverName: '', receiverPhone: '', receiverAddress: '', receiverCountry: '', receiverEmail: '',
               quantity: '', description: '', length: '', width: '', height: '', weight: '',
               totalFreight: '', packages: '', product: '', mode: '', paymentMode: '', origin: '', departureDate: '',
-              destination: '', expectedDeliveryDate: '', pickupDate: '', pickupTime: '', carrier: '',comment: '',
+              destination: '', expectedDeliveryDate: '', pickupDate: '', pickupTime: '', carrier: '', comment: '',
               stage: 0
             })}
             className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -615,11 +616,33 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
             Reset
           </button>
           <button
-            type="button"
             onClick={handleSubmit}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="w-full bg-blue-900 text-white py-2 px-4 rounded-lg hover:bg-blue-800 transition duration-200 font-medium flex items-center justify-center gap-2"
+            disabled={loading}
           >
-            Create Order
+            {loading && (
+              <svg
+                className="animate-spin h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z"
+                ></path>
+              </svg>
+            )}
+            {loading ? "Creating..." : "Create Order"}
           </button>
         </div>
       </div>
@@ -629,4 +652,3 @@ const handleInputChange = (field: keyof OrderFormData, value: string) => {
 
 export default CreateOrderPage;
 
-  

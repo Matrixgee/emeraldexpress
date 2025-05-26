@@ -10,9 +10,9 @@ import toast from "react-hot-toast";
 const AdminLogin = () => {
 
 
-const navigate = useNavigate()
+  const navigate = useNavigate()
 
-const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -20,7 +20,7 @@ const [showPassword, setShowPassword] = useState(false);
 
   const [loading, setloading] = useState(false)
 
-  const handleInputChange = (e:any) => {
+  const handleInputChange = (e: any) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
@@ -29,21 +29,25 @@ const [showPassword, setShowPassword] = useState(false);
 
 
   const handleSubmit = async () => {
+    if (!formData.email || !formData.password) {
+      toast.error("Please fill in all fields");
+      return;
+    }
 
-const loadingId = toast.loading("Please wait...")
-try{
-  setloading(true)
-  const res = await axios.post("/login", formData)
-  console.log(res.data);
-  localStorage.setItem("token", res.data.data.token)
-  navigate("/admin-dashboard/home")
-  }catch(error){
-    console.log(error)
-    toast.error("Login failed")
-  }finally{
-    setloading(false)
-    toast.dismiss(loadingId)
-  }
+    const loadingId = toast.loading("Please wait...")
+    try {
+      setloading(true)
+      const res = await axios.post("/login", formData)
+      console.log(res.data);
+      localStorage.setItem("token", res.data.data.token)
+      navigate("/admin-dashboard/home")
+    } catch (error) {
+      console.log(error)
+      toast.error("Login failed")
+    } finally {
+      setloading(false)
+      toast.dismiss(loadingId)
+    }
   };
 
   const currentYear = new Date().getFullYear()
@@ -51,9 +55,9 @@ try{
     <div className="min-h-screen bg-blue-900 w-xl flex items-center justify-center px-4 py-8">
       <div className="max-w-md w-full">
         <div className="bg-white rounded-lg shadow-xl p-8">
-            <div className="w-full flex justify-center items-center mb-10">
-                <img src={logo} alt="" className="w-50" />
-            </div>
+          <div className="w-full flex justify-center items-center mb-10">
+            <img src={logo} alt="" className="w-50" />
+          </div>
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-gray-900 text-center">
               Sign In
@@ -116,9 +120,32 @@ try{
 
             <button
               onClick={handleSubmit}
-              className="w-full bg-blue-900 text-white py-2 px-4 rounded-lg hover:bg-blue-800 transition duration-200 font-medium"
+              className="w-full bg-blue-900 text-white py-2 px-4 rounded-lg hover:bg-blue-800 transition duration-200 font-medium flex items-center justify-center gap-2"
+              disabled={loading}
             >
-              Sign In
+              {loading && (
+                <svg
+                  className="animate-spin h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z"
+                  ></path>
+                </svg>
+              )}
+              {loading ? "Signing in..." : "Sign in"}
             </button>
           </div>
 
@@ -126,7 +153,7 @@ try{
             <p className="text-gray-600">
               Don't have an account? {' '}
               <button
-                onClick={()=>navigate("/admin/register")}
+                onClick={() => navigate("/admin/register")}
                 className="text-blue-600 cursor-pointer hover:text-blue-500 font-medium"
               >
                 Sign up

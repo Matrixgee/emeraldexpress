@@ -8,16 +8,16 @@ import toast from "react-hot-toast";
 
 const AdminRegister = () => {
 
-    const navigate = useNavigate()
-const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate()
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     username: '',
     email: '',
     password: ''
   });
-  const [ loading, setloading] = useState(false)
+  const [loading, setLoading] = useState(false)
 
-  const handleInputChange = (e:any) => {
+  const handleInputChange = (e: any) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
@@ -25,27 +25,30 @@ const [showPassword, setShowPassword] = useState(false);
   };
 
   const handleSubmit = async () => {
+    if (!formData.username || !formData.email || !formData.password) {
+      toast.error("Please fill in all fields");
+      return;
+    }
 
-    const loadingId =  toast.loading("Please wait...")
+    const loadingId = toast.loading("Please wait...");
+    setLoading(true)
 
-try{
-  const res = await axios.post("/register", formData)
-  setloading(true)
-  toast.success("resgistration succesful")
-  console.log(res);
-}catch(error){
-  console.log(error);
-  toast.error("regi failed")
-}
-finally{
-setloading(false)
-toast.dismiss(loadingId)
-}
+    try {
+      const res = await axios.post("/register", formData);
+      toast.success("Registration successful");
+      console.log(res);
+      navigate("/admin/login")
+    } catch (error) {
+      console.error(error);
+      toast.error("Registration failed");
+    } finally {
+      setLoading(false);
+      toast.dismiss(loadingId);
+    }
 
-
-
-    console.log('Register attempt:', formData);
+    console.log("Register attempt:", formData);
   };
+
 
   const currentyear = new Date().getFullYear()
   return (
@@ -53,9 +56,9 @@ toast.dismiss(loadingId)
       <div className="max-w-md w-full">
 
         <div className="bg-white rounded-lg shadow-xl p-8">
-            <div className="w-full flex justify-center items-center mb-10">
-                <img src={logo} alt="" className="w-50" />
-            </div>
+          <div className="w-full flex justify-center items-center mb-10">
+            <img src={logo} alt="" className="w-50" />
+          </div>
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-gray-900 text-center">
               Create Account
@@ -126,9 +129,32 @@ toast.dismiss(loadingId)
 
             <button
               onClick={handleSubmit}
-              className="w-full bg-blue-900 text-white py-2 px-4 rounded-lg hover:bg-blue-800 transition duration-200 font-medium"
+              className="w-full bg-blue-900 text-white py-2 px-4 rounded-lg hover:bg-blue-800 transition duration-200 font-medium flex items-center justify-center gap-2"
+              disabled={loading}
             >
-              Create Account
+              {loading && (
+                <svg
+                  className="animate-spin h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z"
+                  ></path>
+                </svg>
+              )}
+              {loading ? "Creating..." : "Create Account"}
             </button>
           </div>
 
@@ -136,7 +162,7 @@ toast.dismiss(loadingId)
             <p className="text-gray-600">
               Already have an account? {' '}
               <button
-                onClick={()=>navigate("/admin/login")}
+                onClick={() => navigate("/admin/login")}
                 className="text-blue-600 hover:text-blue-500 cursor-pointer font-medium"
               >
                 Sign in
