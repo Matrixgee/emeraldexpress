@@ -3,41 +3,77 @@ import { useEffect, useState } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import axios from "./config/axiosconfig";
+
+// interface TrackingDetails {
+//   shipperName: string;
+//   shipperNumber: string;
+//   shipperAddress: string;
+//   shipperCountry: string;
+//   shipperEmail: string;
+//   receiverName: string;
+//   receiverNumber: string;
+//   receiverAddress: string;
+//   receiverCountry: string;
+//   receiverEmail: string;
+//   quantity: string;
+//   description: string;
+//   length: string;
+//   width: string;
+//   height: string;
+//   weight: string;
+//   totalFreight: string;
+//   packages: string;
+//   product: string;
+//   mode: string;
+//   paymentMode: string;
+//   origin: string;
+//   departureDate: string;
+//   destination: string;
+//   expectedDeliveryDate: string;
+//   pickupDate: string;
+//   pickupTime: string;
+//   carrier: string;
+//   comment: string;
+//   stage: 0 | 1 | 2 | 3 | 4;
+// }
 
 const TrackingSection = () => {
-  const [trackingId, setTrackingId] = useState('');
+  const [trackingId, setTrackingId] = useState("");
+  // const [trackingResult, setTrackingResult] = useState<TrackingDetails | null>(null);
+  const navigate = useNavigate();
+
   useEffect(() => {
-            AOS.init({
-              duration: 800,
-              easing: "ease-in-out",
-              once: true,
-              mirror: false,
-            });
-          }, []);
-  
-  const [trackingResult, setTrackingResult] = useState<{
-    id: string;
-    status: string;
-    location: string;
-    estimatedDelivery: string;
-    progress: number;
-  } | null>(null);
+    AOS.init({
+      duration: 800,
+      easing: "ease-in-out",
+      once: true,
+      mirror: false,
+    });
+  }, []);
 
-  const handleTracking = () => {
-    navigate("/tracked-item")
-    if (trackingId.trim()) {
-      // Setting the result including the new fields
-      setTrackingResult({
-        id: trackingId,
-        status: 'In Transit',
-        location: 'Distribution Center - Chicago, IL',
-        estimatedDelivery: 'Tomorrow, 2:00 PM',
-        progress: 75
-      });
-    }
-  };
 
-  const navigate = useNavigate()
+
+ const handleTracking = async () => {
+  if (!trackingId.trim()) {
+    toast.error("Please enter a tracking ID.");
+    return;
+  }
+
+  try {
+    toast.loading("Tracking shipment...");
+    const response = await axios.get(`/getOrderByTrackingId/${trackingId}`);
+    console.log(response.data.data)
+    toast.dismiss();
+    navigate("/tracked-item");
+  } catch (error) {
+    toast.dismiss();
+    toast.error("Tracking failed. Please check the tracking ID and try again.");
+    console.error("Tracking error:", error);
+  }
+};
+
 
   return (
     <section className="py-16 bg-gray-50">
@@ -46,7 +82,7 @@ const TrackingSection = () => {
           <h2 className="text-3xl font-bold text-blue-900 mb-4">Track Your Shipment</h2>
           <p className="text-gray-600 text-lg">Enter your tracking ID to get real-time updates on your package</p>
         </div>
-        
+
         <div className="max-w-2xl mx-auto">
           <div className="bg-white p-8 rounded-lg shadow-lg">
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
@@ -59,49 +95,12 @@ const TrackingSection = () => {
               />
               <button
                 onClick={handleTracking}
-                className="bg-blue-900 cursor-pointer text-white px-8 py-3 rounded-lg hover:bg-blue-800 transition duration-300 flex items-center gap-2"
+                className="bg-blue-900 text-white px-8 py-3 rounded-lg hover:bg-blue-800 transition duration-300 flex items-center gap-2"
               >
                 <Search size={20} />
                 Track
               </button>
             </div>
-
-            {trackingResult && (
-              <div className="border-t pt-8">
-                <h3 className="text-xl font-bold text-blue-900 mb-4">Tracking Results</h3>
-                <div className="bg-blue-50 p-6 rounded-lg">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    <div>
-                      <p className="text-sm text-gray-600">Tracking ID</p>
-                      <p className="font-semibold text-blue-900">{trackingResult.id}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600">Status</p>
-                      <p className="font-semibold text-green-600">{trackingResult.status}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600">Current Location</p>
-                      <p className="font-semibold text-blue-900">{trackingResult.location}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600">Estimated Delivery</p>
-                      <p className="font-semibold text-blue-900">{trackingResult.estimatedDelivery}</p>
-                    </div>
-                  </div>
-                  
-                  <div className="mb-4">
-                    <p className="text-sm text-gray-600 mb-2">Progress</p>
-                    <div className="w-full bg-gray-200 rounded-full h-3">
-                      <div 
-                        className="bg-blue-600 h-3 rounded-full transition-all duration-500"
-                        style={{ width: `${trackingResult.progress}%` }}
-                      ></div>
-                    </div>
-                    <p className="text-sm text-blue-600 mt-1">{trackingResult.progress}% Complete</p>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>
