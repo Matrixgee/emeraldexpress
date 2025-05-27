@@ -54,33 +54,43 @@ const TrackingSection = () => {
   }, []);
 
 
+  const handleTracking = async () => {
+    if (!trackingId.trim()) {
+      toast.error("Please enter a tracking ID.");
+      return;
+    }
 
- const handleTracking = async () => {
-  if (!trackingId.trim()) {
-    toast.error("Please enter a tracking ID.");
-    return;
-  }
-
-  try {
-    toast.loading("Tracking shipment...");
-    const response = await axios.get(`/getOrderByTrackingId/${trackingId}`);
-    console.log(response.data.data)
-    toast.dismiss();
-    navigate("/tracked-item");
-  } catch (error) {
-    toast.dismiss();
-    toast.error("Tracking failed. Please check the tracking ID and try again.");
-    console.error("Tracking error:", error);
-  }
-};
+    try {
+      toast.loading("Tracking shipment...");
+      const response = await axios.get(`/getOrderByTrackingId/${trackingId}`);
+      const trackingData = response.data.data;
+      console.log(response.data.data);
+      toast.dismiss();
+      navigate("/tracked-item", { state: { trackingData } });
+    } catch (error) {
+      toast.dismiss();
+      toast.error(
+        "Tracking failed. Please check the tracking ID and try again."
+      );
+      console.error("Tracking error:", error);
+    }
+  };
 
 
   return (
     <section className="py-16 bg-gray-50">
-      <div className="container mx-auto px-6" data-aos="fade-in" data-aos-delay="200">
+      <div
+        className="container mx-auto px-6"
+        data-aos="fade-in"
+        data-aos-delay="200"
+      >
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-blue-900 mb-4">Track Your Shipment</h2>
-          <p className="text-gray-600 text-lg">Enter your tracking ID to get real-time updates on your package</p>
+          <h2 className="text-3xl font-bold text-blue-900 mb-4">
+            Track Your Shipment
+          </h2>
+          <p className="text-gray-600 text-lg">
+            Enter your tracking ID to get real-time updates on your package
+          </p>
         </div>
 
         <div className="max-w-2xl mx-auto">
