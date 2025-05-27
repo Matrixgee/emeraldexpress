@@ -4,9 +4,11 @@ import bg from "../../assets/Logo.png";
 import { useEffect } from "react";
 
 const TrackedItem = () => {
+
   const location = useLocation();
   const navigate = useNavigate();
   const trackingData = location.state?.trackingData;
+
 
   useEffect(() => {
     if (!trackingData) {

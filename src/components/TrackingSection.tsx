@@ -53,6 +53,7 @@ const TrackingSection = () => {
     });
   }, []);
 
+
   const handleTracking = async () => {
     if (!trackingId.trim()) {
       toast.error("Please enter a tracking ID.");
@@ -74,6 +75,7 @@ const TrackingSection = () => {
       console.error("Tracking error:", error);
     }
   };
+
 
   return (
     <section className="py-16 bg-gray-50">
