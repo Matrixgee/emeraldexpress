@@ -57,7 +57,7 @@ const AboutPage = () => {
 
     return (
         <div className='overflow-x-hidden'>
-            <section className="bg-blue-900 h-[450px] text-white py-16 bg-no-repeat bg-center bg-cover flex justify-center items-center"
+            <section className="bg-blue-900 h-[450px] max-md:h-max text-white py-16 bg-no-repeat bg-center bg-cover flex justify-center items-center"
                 style={{
                     backgroundImage: `url(${aboutbg})`,
                 }}

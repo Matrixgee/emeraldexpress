@@ -3,8 +3,6 @@ import { router } from "./Routes/Routes"
 import './App.css'
 
 const App = () => {
-  
-  console.log(`${import.meta.env.VITE_DEVE_URL}`)
 
 
 

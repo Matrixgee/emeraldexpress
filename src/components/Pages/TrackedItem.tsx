@@ -26,7 +26,7 @@ const TrackedItem = () => {
           <div className="h-full w-[40%] max-lg:w-full max-lg:border-b-2 max-lg:border-r-0 border-r-2 border-black p-4 flex flex-col justify-center items-center">
             <img src={bar} alt="" />
             <div className="font-mono text-[17px]">
-              {trackingData?.shipmentId}
+              {trackingData?.trackingId}
             </div>
             <div className="text-xl">Accounts Copy</div>
           </div>
@@ -42,7 +42,7 @@ const TrackedItem = () => {
               </div>
               <div className="w-[30%] h-full border-black p-4 text-[16px] flex justify-center flex-col">
                 <h5>Delivery date:</h5>
-                <p>{trackingData?.deliveryDate}</p>
+                <p>{trackingData?.expectedDeliveryDate}</p>
               </div>
             </div>
             <div className="w-full h-1/3 flex border-b-2 border-black">
@@ -56,7 +56,7 @@ const TrackedItem = () => {
               </div>
               <div className="w-[30%] h-full border-black p-4 text-[16px] flex justify-center flex-col">
                 <h5>Courier:</h5>
-                <p>{trackingData?.courier}</p>
+                <p>{trackingData?.carrier}</p>
               </div>
             </div>
             <div className="w-full h-1/3 flex">
@@ -98,13 +98,13 @@ const TrackedItem = () => {
                   <div className="w-[35%] p-4 border-r-2 border-black">
                     Consigner
                   </div>
-                  <div className="p-4">{trackingData?.consigneeName}</div>
+                  <div className="p-4">{trackingData?.receiverName}</div>
                 </div>
                 <div className=" p-4 text-[17px] h-[70%] flex flex-col justify-center">
-                  <div className="mb-2">{trackingData?.consigneeAddress}</div>
-                  <div className="mb-2">{trackingData?.consigneePhone}</div>
+                  <div className="mb-2">{trackingData?.receiverAddress}</div>
+                  <div className="mb-2">{trackingData?.receiverNumber}</div>
                   <div className="text-blue-600 underline break-all">
-                    {trackingData?.consigneeEmail}
+                    {trackingData?.receiverEmail}
                   </div>
                 </div>
               </div>
@@ -112,7 +112,7 @@ const TrackedItem = () => {
             <div className="h-1/3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
               <div className="p-4 sm:p-3 border-r-2 text-[17px] border-black">
                 <div className="font-semibold">Type of Shipment:</div>
-                <div>{trackingData?.shipmentType}</div>
+                <div>{trackingData?.mode}</div>
               </div>
               <div className="p-4 sm:p-3 border-r-2 text[17px] border-black">
                 <div className="font-semibold">Packages:</div>
@@ -128,7 +128,7 @@ const TrackedItem = () => {
               </div>
               <div className="p-4 sm:p-3 border-r-2 text-[17px] border-black">
                 <div className="font-semibold">Total Freight:</div>
-                <div>{trackingData?.totalFreight}</div>
+                <div>${trackingData?.totalFreight}</div>
               </div>
               <div className="p-4 sm:p-3 text-[17px]">
                 <div className="font-semibold">Quantity:</div>
@@ -138,7 +138,7 @@ const TrackedItem = () => {
           </div>
           <div className="h-full w-[25%] max-md:w-full">
             <div className="h-[19.7%] border-b-2 text-[17px] flex items-center p-4 border-black">
-              <p>Status: {trackingData?.status}</p>
+              <p>Status: {trackingData?.orderStatus}</p>
             </div>
             <div className="h-[80.3%] text-[17px] flex items-start p-4">
               <p>Comment: {trackingData?.comment}</p>
