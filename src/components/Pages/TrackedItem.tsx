@@ -4,11 +4,9 @@ import bg from "../../assets/Logo.png";
 import { useEffect } from "react";
 
 const TrackedItem = () => {
-
   const location = useLocation();
   const navigate = useNavigate();
   const trackingData = location.state?.trackingData;
-
 
   useEffect(() => {
     if (!trackingData) {
@@ -33,43 +31,40 @@ const TrackedItem = () => {
           <div className="h-full w-[40%] max-lg:w-full max-lg:h-[450px] flex flex-col">
             <div className="w-full h-1/3 flex border-b-2 border-black">
               <div className="w-[30%] h-full border-r-2 border-black p-4 text-[16px] flex justify-center flex-col">
-                <h5>Pickup date:</h5>
+                <h5 className="font-semibold">Pickup date:</h5>
                 <p>{trackingData?.pickUpDate}</p>
               </div>
               <div className="w-[40%] h-full border-r-2 border-black p-4 text-[16px] flex justify-center flex-col">
-                <h5>Pickup time</h5>
+                <h5 className="font-semibold">Pickup time</h5>
                 <p>{trackingData?.pickupTime}</p>
               </div>
               <div className="w-[30%] h-full border-black p-4 text-[16px] flex justify-center flex-col">
-                <h5>Delivery date:</h5>
+                <h5 className="font-semibold">Delivery date:</h5>
                 <p>{trackingData?.expectedDeliveryDate}</p>
               </div>
             </div>
             <div className="w-full h-1/3 flex border-b-2 border-black">
               <div className="w-[30%] h-full border-r-2 border-black p-4 text-[16px] flex justify-center flex-col">
-                <h5>Origin:</h5>
+                <h5 className="font-semibold">Origin:</h5>
                 <p>{trackingData?.origin}</p>
               </div>
               <div className="w-[40%] h-full border-r-2 border-black p-4 text-[16px] flex justify-center flex-col">
-                <h5>Destination:</h5>
+                <h5 className="font-semibold">Destination:</h5>
                 <p>{trackingData?.destination}</p>
               </div>
               <div className="w-[30%] h-full border-black p-4 text-[16px] flex justify-center flex-col">
-                <h5>Courier:</h5>
+                <h5 className="font-semibold">Courier:</h5>
                 <p>{trackingData?.carrier}</p>
               </div>
             </div>
             <div className="w-full h-1/3 flex">
               <div className="w-[30%] h-full border-r-2 border-black p-4 text-[16px] flex justify-center flex-col">
-                <h5>Carrier:</h5>
+                <h5 className="font-semibold">Carrier:</h5>
                 <p>{trackingData?.carrier}</p>
               </div>
-              <div className="w-[40%] h-full border-r-2 border-black p-4 text-[16px] flex justify-center flex-col">
-                <h5>Carrier reference No:</h5>
-                <p className="max-sm:text-sm">{trackingData?.carrierRef}</p>
-              </div>
+
               <div className="w-[30%] p-4 h-full text-[16px] flex justify-center flex-col">
-                <h5>Departure Time:</h5>
+                <h5 className="font-semibold">Departure Time:</h5>
                 <p>{trackingData?.departureTime}</p>
               </div>
             </div>
@@ -81,7 +76,7 @@ const TrackedItem = () => {
             <div className="h-2/3 border-b-2 max-md:flex-col border-black flex">
               <div className="w-1/2 max-md:w-full border-r-2 max-md:border-r-0 border-black">
                 <div className="flex text-[17px] w-full h-[30%] border-b-2 border-black">
-                  <div className="w-[35%] max-md:w-[50%] p-4 border-r-2 border-black">
+                  <div className="w-[35%] max-md:w-[50%] p-4 border-r-2 border-black font-semibold">
                     Shipper
                   </div>
                   <div className="p-4">{trackingData?.shipperName}</div>
@@ -95,7 +90,7 @@ const TrackedItem = () => {
               </div>
               <div className="w-1/2 max-md:w-full">
                 <div className="flex text-[17px] w-full h-[30%] border-b-2 max-md:border-t-2 border-black">
-                  <div className="w-[35%] p-4 border-r-2 border-black">
+                  <div className="w-[35%] p-4 border-r-2 border-black font-semibold">
                     Consigner
                   </div>
                   <div className="p-4">{trackingData?.receiverName}</div>

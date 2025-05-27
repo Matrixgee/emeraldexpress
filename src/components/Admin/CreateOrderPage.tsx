@@ -19,6 +19,7 @@ interface OrderFormData {
   receiverAddress: string;
   receiverCountry: string;
   receiverEmail: string;
+  currentLocation: string;
   quantity: string;
   description: string;
   length: string;
@@ -44,11 +45,36 @@ interface OrderFormData {
 type FormField = keyof OrderFormData;
 
 const defaultFormData: OrderFormData = {
-  shipperName: "", shipperNumber: "", shipperAddress: "", shipperCountry: "", shipperEmail: "",
-  receiverName: "", receiverNumber: "", receiverAddress: "", receiverCountry: "", receiverEmail: "",
-  quantity: "", description: "", length: "", width: "", height: "", weight: "",
-  totalFreight: "", packages: "", product: "", mode: "", paymentMode: "", origin: "", departureDate: "",
-  destination: "", expectedDeliveryDate: "", pickupDate: "", pickupTime: "", carrier: "", comment: "",
+  shipperName: "",
+  shipperNumber: "",
+  shipperAddress: "",
+  shipperCountry: "",
+  shipperEmail: "",
+  receiverName: "",
+  receiverNumber: "",
+  receiverAddress: "",
+  receiverCountry: "",
+  receiverEmail: "",
+  quantity: "",
+  currentLocation: "",
+  description: "",
+  length: "",
+  width: "",
+  height: "",
+  weight: "",
+  totalFreight: "",
+  packages: "",
+  product: "",
+  mode: "",
+  paymentMode: "",
+  origin: "",
+  departureDate: "",
+  destination: "",
+  expectedDeliveryDate: "",
+  pickupDate: "",
+  pickupTime: "",
+  carrier: "",
+  comment: "",
   stage: 0,
 };
 
@@ -60,7 +86,9 @@ const CreateOrderPage = () => {
   useEffect(() => {
     const fetchCountries = async () => {
       try {
-        const response = await fetch("https://countriesnow.space/api/v0.1/countries");
+        const response = await fetch(
+          "https://countriesnow.space/api/v0.1/countries"
+        );
         const data = await response.json();
         const sortedCountries = data.data.sort((a: Country, b: Country) =>
           a.country.localeCompare(b.country)
@@ -86,10 +114,6 @@ const CreateOrderPage = () => {
     fetchCountries();
   }, []);
 
-
-
-
-
   const stageOptions = [
     { value: 0, label: "Order Placed", progress: 0 },
     { value: 1, label: "Processing", progress: 25 },
@@ -100,47 +124,49 @@ const CreateOrderPage = () => {
 
   const getProgressPercentage = (stage: number): number => {
     const stageMap: Record<0 | 1 | 2 | 3 | 4, number> = {
-      0: 0, 1: 25, 2: 50, 3: 75, 4: 100
+      0: 0,
+      1: 25,
+      2: 50,
+      3: 75,
+      4: 100,
     };
     return stageMap[stage as 0 | 1 | 2 | 3 | 4] ?? 0;
   };
 
   const handleInputChange = (field: keyof OrderFormData, value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [field]: field === "stage" ? Number(value) : value,
     }));
 
     if (errors[field as FormField]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }));
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
   };
 
-  const [loading, setLoading] = useState(false)
-  const navigate = useNavigate()
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const adminToken = localStorage.getItem("token")
+  const adminToken = localStorage.getItem("token");
   const headers = {
     headers: { Authorization: `Bearer ${adminToken}` },
-  }
-
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    const loadingId = toast.loading("Creating Order...")
+    const loadingId = toast.loading("Creating Order...");
     e.preventDefault();
     try {
-      setLoading(true)
-      const res = await axios.post("/createOrder", formData, headers)
-      console.log(res)
-      toast.success("Order created Successfully")
-      navigate("/admin-dashboard/orders")
-      
+      setLoading(true);
+      const res = await axios.post("/createOrder", formData, headers);
+      console.log(res);
+      toast.success("Order created Successfully");
+      navigate("/admin-dashboard/orders");
     } catch (error) {
-      console.log(error)
-      toast.error("Error creating order, Please check and try again")
+      console.log(error);
+      toast.error("Error creating order, Please check and try again");
     } finally {
-      setLoading(false)
-      toast.dismiss(loadingId)
+      setLoading(false);
+      toast.dismiss(loadingId);
     }
 
     console.log("Order created:", {
@@ -148,50 +174,63 @@ const CreateOrderPage = () => {
       progressPercentage: getProgressPercentage(formData.stage),
     });
 
-
-
-
     setFormData(defaultFormData);
   };
 
   return (
     <div className="p-0">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">Create New Order</h2>
+      <h2 className="text-2xl font-bold text-gray-900 mb-6">
+        Create New Order
+      </h2>
 
       <div className="space-y-8">
         {/* Shipper Details */}
         <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Shipper Details</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Shipper Details
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Shipper Name</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Shipper Name
+              </label>
               <input
                 type="text"
                 name="shipperName"
                 value={formData.shipperName}
-                onChange={(val) => handleInputChange("shipperName", val.target.value)}
+                onChange={(val) =>
+                  handleInputChange("shipperName", val.target.value)
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Phone Number
+              </label>
               <input
                 type="phone"
                 name="shipperPhone"
                 value={formData.shipperNumber}
-                onChange={(val) => handleInputChange("shipperNumber", val.target.value)}
+                onChange={(val) =>
+                  handleInputChange("shipperNumber", val.target.value)
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Address
+              </label>
               <input
                 type="text"
                 name="shipperAddress"
                 value={formData.shipperAddress}
-                onChange={(val) => handleInputChange("shipperAddress", val.target.value)}
+                onChange={(val) =>
+                  handleInputChange("shipperAddress", val.target.value)
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
@@ -203,7 +242,9 @@ const CreateOrderPage = () => {
               <select
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 value={formData.shipperCountry}
-                onChange={(e) => handleInputChange("shipperCountry", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("shipperCountry", e.target.value)
+                }
                 required
               >
                 <option value="">Select a country</option>
@@ -217,16 +258,22 @@ const CreateOrderPage = () => {
                 ))}
               </select>
               {errors.shipperCountry && (
-                <p className="mt-1 text-sm text-red-400">{errors.shipperCountry}</p>
+                <p className="mt-1 text-sm text-red-400">
+                  {errors.shipperCountry}
+                </p>
               )}
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Email
+              </label>
               <input
                 type="email"
                 name="shipperEmail"
                 value={formData.shipperEmail}
-                onChange={(val) => handleInputChange("shipperEmail", val.target.value)}
+                onChange={(val) =>
+                  handleInputChange("shipperEmail", val.target.value)
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
@@ -235,37 +282,51 @@ const CreateOrderPage = () => {
         </div>
 
         <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Receiver Details</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Receiver Details
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Receiver Name</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Receiver Name
+              </label>
               <input
                 type="text"
                 name="receiverName"
                 value={formData.receiverName}
-                onChange={(val) => handleInputChange("receiverName", val.target.value)}
+                onChange={(val) =>
+                  handleInputChange("receiverName", val.target.value)
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Phone Number
+              </label>
               <input
                 type="tel"
                 name="receiverPhone"
                 value={formData.receiverNumber}
-                onChange={(val) => handleInputChange("receiverNumber", val.target.value)}
+                onChange={(val) =>
+                  handleInputChange("receiverNumber", val.target.value)
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Address
+              </label>
               <input
                 type="text"
                 name="receiverAddress"
                 value={formData.receiverAddress}
-                onChange={(val) => handleInputChange("receiverAddress", val.target.value)}
+                onChange={(val) =>
+                  handleInputChange("receiverAddress", val.target.value)
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
@@ -277,7 +338,9 @@ const CreateOrderPage = () => {
               <select
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 value={formData.receiverCountry}
-                onChange={(e) => handleInputChange("receiverCountry", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("receiverCountry", e.target.value)
+                }
                 required
               >
                 <option value="">Select a country</option>
@@ -291,16 +354,22 @@ const CreateOrderPage = () => {
                 ))}
               </select>
               {errors.receiverCountry && (
-                <p className="mt-1 text-sm text-red-400">{errors.receiverCountry}</p>
+                <p className="mt-1 text-sm text-red-400">
+                  {errors.receiverCountry}
+                </p>
               )}
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Email
+              </label>
               <input
                 type="email"
                 name="receiverEmail"
                 value={formData.receiverEmail}
-                onChange={(val) => handleInputChange("receiverEmail", val.target.value)}
+                onChange={(val) =>
+                  handleInputChange("receiverEmail", val.target.value)
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
@@ -310,45 +379,61 @@ const CreateOrderPage = () => {
 
         {/* Package Details */}
         <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Package Details</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Package Details
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Quantity
+              </label>
               <input
                 type="number"
                 name="quantity"
                 value={formData.quantity}
-                onChange={(val) => handleInputChange("quantity", val.target.value)}
+                onChange={(val) =>
+                  handleInputChange("quantity", val.target.value)
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
             </div>
             <div className="md:col-span-2 lg:col-span-1">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Weight (kg)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Weight (kg)
+              </label>
               <input
                 type="number"
                 step="0.1"
                 name="weight"
                 value={formData.weight}
-                onChange={(val) => handleInputChange("weight", val.target.value)}
+                onChange={(val) =>
+                  handleInputChange("weight", val.target.value)
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Length (cm)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Length (cm)
+              </label>
               <input
                 type="number"
                 step="0.1"
                 name="length"
                 value={formData.length}
-                onChange={(val) => handleInputChange("length", val.target.value)}
+                onChange={(val) =>
+                  handleInputChange("length", val.target.value)
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Width (cm)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Width (cm)
+              </label>
               <input
                 type="number"
                 step="0.1"
@@ -360,23 +445,31 @@ const CreateOrderPage = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Height (cm)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Height (cm)
+              </label>
               <input
                 type="number"
                 step="0.1"
                 name="height"
                 value={formData.height}
-                onChange={(val) => handleInputChange("height", val.target.value)}
+                onChange={(val) =>
+                  handleInputChange("height", val.target.value)
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
             </div>
             <div className="md:col-span-2 lg:col-span-3">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Description
+              </label>
               <textarea
                 name="description"
                 value={formData.description}
-                onChange={(val) => handleInputChange("description", val.target.value)}
+                onChange={(val) =>
+                  handleInputChange("description", val.target.value)
+                }
                 rows={3}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
@@ -387,44 +480,76 @@ const CreateOrderPage = () => {
 
         {/* Shipment Details */}
         <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Shipment Details</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Shipment Details
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Total Freight</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Total Freight
+              </label>
               <input
                 type="text"
                 name="totalFreight"
                 value={formData.totalFreight}
-                onChange={(val) => handleInputChange("totalFreight", val.target.value)}
+                onChange={(val) =>
+                  handleInputChange("totalFreight", val.target.value)
+                }
                 placeholder="$0.00"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Packages</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Packages
+              </label>
               <input
                 type="number"
                 name="packages"
                 value={formData.packages}
-                onChange={(val) => handleInputChange("packages", val.target.value)}
+                onChange={(val) =>
+                  handleInputChange("packages", val.target.value)
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Product</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Current Location
+              </label>
+              <input
+                type="text"
+                name="totalFreight"
+                value={formData.currentLocation}
+                onChange={(val) =>
+                  handleInputChange("currentLocation", val.target.value)
+                }
+                placeholder=""
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Product
+              </label>
               <input
                 type="text"
                 name="product"
                 value={formData.product}
-                onChange={(val) => handleInputChange("product", val.target.value)}
+                onChange={(val) =>
+                  handleInputChange("product", val.target.value)
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Mode</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Mode
+              </label>
               <select
                 name="mode"
                 value={formData.mode}
@@ -440,11 +565,15 @@ const CreateOrderPage = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Payment Mode</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Payment Mode
+              </label>
               <select
                 name="paymentMode"
                 value={formData.paymentMode}
-                onChange={(val) => handleInputChange("paymentMode", val.target.value)}
+                onChange={(val) =>
+                  handleInputChange("paymentMode", val.target.value)
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               >
@@ -455,9 +584,10 @@ const CreateOrderPage = () => {
               </select>
             </div>
 
-
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Stage</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Stage
+              </label>
               <select
                 name="stage"
                 value={formData.stage}
@@ -465,7 +595,7 @@ const CreateOrderPage = () => {
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               >
-                {stageOptions.map(option => (
+                {stageOptions.map((option) => (
                   <option key={option.value} value={option.value}>
                     Stage {option.value} - {option.label} ({option.progress}%)
                   </option>
@@ -474,77 +604,105 @@ const CreateOrderPage = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Origin</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Origin
+              </label>
               <input
                 type="text"
                 name="origin"
                 value={formData.origin}
-                onChange={(val) => handleInputChange("origin", val.target.value)}
+                onChange={(val) =>
+                  handleInputChange("origin", val.target.value)
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Departure Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Departure Date
+              </label>
               <input
                 type="date"
                 name="departureDate"
                 value={formData.departureDate}
-                onChange={(val) => handleInputChange("departureDate", val.target.value)}
+                onChange={(val) =>
+                  handleInputChange("departureDate", val.target.value)
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Destination</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Destination
+              </label>
               <input
                 type="text"
                 name="destination"
                 value={formData.destination}
-                onChange={(val) => handleInputChange("destination", val.target.value)}
+                onChange={(val) =>
+                  handleInputChange("destination", val.target.value)
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Expected Delivery Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Expected Delivery Date
+              </label>
               <input
                 type="date"
                 name="expectedDeliveryDate"
                 value={formData.expectedDeliveryDate}
-                onChange={(val) => handleInputChange("expectedDeliveryDate", val.target.value)}
+                onChange={(val) =>
+                  handleInputChange("expectedDeliveryDate", val.target.value)
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Pickup Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Pickup Date
+              </label>
               <input
                 type="date"
                 name="pickupDate"
                 value={formData.pickupDate}
-                onChange={(val) => handleInputChange("pickupDate", val.target.value)}
+                onChange={(val) =>
+                  handleInputChange("pickupDate", val.target.value)
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Pickup Time</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Pickup Time
+              </label>
               <input
                 type="time"
                 name="pickupTime"
                 value={formData.pickupTime}
-                onChange={(val) => handleInputChange("pickupTime", val.target.value)}
+                onChange={(val) =>
+                  handleInputChange("pickupTime", val.target.value)
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Carrier</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Carrier
+              </label>
               <select
                 name="carrier"
                 value={formData.carrier}
-                onChange={(val) => handleInputChange("carrier", val.target.value)}
+                onChange={(val) =>
+                  handleInputChange("carrier", val.target.value)
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               >
@@ -553,11 +711,15 @@ const CreateOrderPage = () => {
               </select>
             </div>
             <div className="md:col-span-2 lg:col-span-3">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Comment</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Comment
+              </label>
               <textarea
                 name="comment"
                 value={formData.comment}
-                onChange={(val) => handleInputChange("comment", val.target.value)}
+                onChange={(val) =>
+                  handleInputChange("comment", val.target.value)
+                }
                 rows={3}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Additional comments or special instructions..."
@@ -568,11 +730,14 @@ const CreateOrderPage = () => {
 
         {/* Progress Bar Preview */}
         <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Progress Preview</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Progress Preview
+          </h3>
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium text-gray-700">
-                Current Stage: {stageOptions.find(s => s.value === formData.stage)?.label}
+                Current Stage:{" "}
+                {stageOptions.find((s) => s.value === formData.stage)?.label}
               </span>
               <span className="text-sm text-gray-500">
                 {getProgressPercentage(formData.stage)}%
@@ -591,7 +756,8 @@ const CreateOrderPage = () => {
               </div>
             </div>
             <p className="text-xs text-gray-500">
-              This progress bar will be displayed when clients track orders using the tracking ID
+              This progress bar will be displayed when clients track orders
+              using the tracking ID
             </p>
           </div>
         </div>
@@ -599,14 +765,41 @@ const CreateOrderPage = () => {
         <div className="flex justify-end space-x-4">
           <button
             type="button"
-            onClick={() => setFormData({
-              shipperName: '', shipperNumber: '', shipperAddress: '', shipperCountry: '', shipperEmail: '',
-              receiverName: '', receiverNumber: '', receiverAddress: '', receiverCountry: '', receiverEmail: '',
-              quantity: '', description: '', length: '', width: '', height: '', weight: '',
-              totalFreight: '', packages: '', product: '', mode: '', paymentMode: '', origin: '', departureDate: '',
-              destination: '', expectedDeliveryDate: '', pickupDate: '', pickupTime: '', carrier: '', comment: '',
-              stage: 0
-            })}
+            onClick={() =>
+              setFormData({
+                shipperName: "",
+                shipperNumber: "",
+                shipperAddress: "",
+                shipperCountry: "",
+                shipperEmail: "",
+                receiverName: "",
+                receiverNumber: "",
+                receiverAddress: "",
+                receiverCountry: "",
+                receiverEmail: "",
+                currentLocation: "",
+                quantity: "",
+                description: "",
+                length: "",
+                width: "",
+                height: "",
+                weight: "",
+                totalFreight: "",
+                packages: "",
+                product: "",
+                mode: "",
+                paymentMode: "",
+                origin: "",
+                departureDate: "",
+                destination: "",
+                expectedDeliveryDate: "",
+                pickupDate: "",
+                pickupTime: "",
+                carrier: "",
+                comment: "",
+                stage: 0,
+              })
+            }
             className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             Reset
@@ -647,4 +840,3 @@ const CreateOrderPage = () => {
 };
 
 export default CreateOrderPage;
-
