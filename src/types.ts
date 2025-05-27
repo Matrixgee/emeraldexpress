@@ -1,9 +1,10 @@
 export interface Order {
+  currentLocation: string | number | readonly string[] | undefined;
   id: string;
   customer: string;
   origin: string;
   destination: string;
-  status: 'Pending' | 'In Transit' | 'Delivered';
+  status: "Pending" | "In Transit" | "Delivered";
   date: string;
   value: string;
   notes?: string;
