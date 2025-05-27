@@ -2,6 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import bar from "../../assets/bar.png";
 import bg from "../../assets/Logo.png";
 import { useEffect } from "react";
+import { X } from "lucide-react";
 
 const TrackedItem = () => {
   const location = useLocation();
@@ -14,9 +15,23 @@ const TrackedItem = () => {
     }
   }, [trackingData, navigate]);
 
+  const handleBack = () => {
+    navigate(-1);
+  };
+
   return (
     <div className="bg-blue-900 w-full h-max lg:h-screen p-3 md:text-[18px]">
       <div className="bg-white border-2 border-black w-full h-full">
+        <div className="w-[50px] h-[30px] border flex justify-center mt-3 ml-2 rounded-md">
+          <button
+            type="button"
+            onClick={handleBack}
+            className="text-gray-400 hover:text-gray-600"
+          >
+            <X className="h-6 w-6" />
+          </button>
+        </div>
+
         <div className="w-full h-[43%] border-b-2 border-black flex max-lg:flex-col">
           <div className="h-full w-[30%] max-lg:border-b-2 max-lg:border-r-0 max-lg:w-full max-lg:justify-center flex items-center border-r-2 border-black">
             <img src={bg} alt="" className="max-lg:w-max max-lg:h-[40px]" />

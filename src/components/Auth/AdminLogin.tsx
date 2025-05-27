@@ -1,32 +1,27 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
-import logo from "../../assets/Logo.png"
+import logo from "../../assets/Logo.png";
 import axios from "../config/axiosconfig";
 import toast from "react-hot-toast";
 
-
-
 const AdminLogin = () => {
-
-
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    email: '',
-    password: ''
+    email: "",
+    password: "",
   });
 
-  const [loading, setloading] = useState(false)
+  const [loading, setloading] = useState(false);
 
   const handleInputChange = (e: any) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
-
 
   const handleSubmit = async () => {
     if (!formData.email || !formData.password) {
@@ -34,28 +29,31 @@ const AdminLogin = () => {
       return;
     }
 
-    const loadingId = toast.loading("Please wait...")
+    const loadingId = toast.loading("Please wait...");
     try {
-      setloading(true)
-      const res = await axios.post("/login", formData)
+      setloading(true);
+      const res = await axios.post("/login", formData);
       console.log(res.data);
-      localStorage.setItem("token", res.data.data.token)
-      navigate("/admin-dashboard/home")
+      localStorage.setItem("token", res.data.data.token);
+      navigate("/admin-dashboard/home");
     } catch (error) {
-      console.log(error)
-      toast.error("Login failed")
+      console.log(error);
+      toast.error("Login failed");
     } finally {
-      setloading(false)
-      toast.dismiss(loadingId)
+      setloading(false);
+      toast.dismiss(loadingId);
     }
   };
 
-  const currentYear = new Date().getFullYear()
+  const currentYear = new Date().getFullYear();
   return (
     <div className="min-h-screen bg-blue-900 w-xl flex items-center justify-center px-4 py-8">
       <div className="max-w-md w-full">
         <div className="bg-white rounded-lg shadow-xl p-8">
-          <div className="w-full flex justify-center items-center mb-10">
+          <div
+            className="w-full flex justify-center items-center mb-10"
+            onClick={() => navigate("/")}
+          >
             <img src={logo} alt="" className="w-50" />
           </div>
           <div className="mb-6">
@@ -92,7 +90,7 @@ const AdminLogin = () => {
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
@@ -104,7 +102,11 @@ const AdminLogin = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                 >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
                 </button>
               </div>
             </div>
@@ -151,7 +153,7 @@ const AdminLogin = () => {
 
           <div className="mt-6 text-center">
             <p className="text-gray-600">
-              Don't have an account? {' '}
+              Don't have an account?{" "}
               <button
                 onClick={() => navigate("/admin/register")}
                 className="text-blue-600 cursor-pointer hover:text-blue-500 font-medium"
@@ -171,6 +173,6 @@ const AdminLogin = () => {
       </div>
     </div>
   );
-}
+};
 
-export default AdminLogin
+export default AdminLogin;
