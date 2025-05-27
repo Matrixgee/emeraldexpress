@@ -1,24 +1,29 @@
 import { Mail, MapPin, Phone } from "lucide-react";
-import { useEffect } from 'react';
+import { useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
 const ContactInfo = () => {
-
-        useEffect(() => {
-            AOS.init({
-                duration: 800,
-                easing: "ease-in-out",
-                once: true,
-                mirror: false,
-            });
-        }, []);
+  useEffect(() => {
+    AOS.init({
+      duration: 800,
+      easing: "ease-in-out",
+      once: true,
+      mirror: false,
+    });
+  }, []);
 
   return (
     <div className="space-y-8">
-      <div className="bg-blue-50 p-8 rounded-lg" data-aos="fade-left" data-aos-delay="800">
-        <h3 className="text-xl font-semibold text-blue-900 mb-6">Get in Touch</h3>
-        
+      <div
+        className="bg-blue-50 p-8 rounded-lg"
+        data-aos="fade-left"
+        data-aos-delay="800"
+      >
+        <h3 className="text-xl font-semibold text-blue-900 mb-6">
+          Get in Touch
+        </h3>
+
         <div className="space-y-4">
           <div className="flex items-center">
             <Phone className="text-blue-900 mr-4" size={24} />
@@ -27,21 +32,22 @@ const ContactInfo = () => {
               <p className="text-gray-600">+1 (800) 555-LOGI</p>
             </div>
           </div>
-          
+
           <div className="flex items-center">
             <Mail className="text-blue-900 mr-4" size={24} />
             <div>
               <p className="font-semibold text-blue-900">Email</p>
-              <p className="text-gray-600">info@Emerald Express.com</p>
+              <p className="text-gray-600">support@emeraldexpress.org</p>
             </div>
           </div>
-          
+
           <div className="flex items-center">
             <MapPin className="text-blue-900 mr-4" size={24} />
             <div>
               <p className="font-semibold text-blue-900">Address</p>
               <p className="text-gray-600">
-                123 Logistics Ave<br />
+                123 Logistics Ave
+                <br />
                 New York, NY 10001
               </p>
             </div>
@@ -49,8 +55,14 @@ const ContactInfo = () => {
         </div>
       </div>
 
-      <div className="bg-white p-8 rounded-lg shadow-lg" data-aos="fade-left" data-aos-delay="800">
-        <h3 className="text-xl font-semibold text-blue-900 mb-4">Business Hours</h3>
+      <div
+        className="bg-white p-8 rounded-lg shadow-lg"
+        data-aos="fade-left"
+        data-aos-delay="800"
+      >
+        <h3 className="text-xl font-semibold text-blue-900 mb-4">
+          Business Hours
+        </h3>
         <div className="space-y-2 text-gray-600">
           <div className="flex justify-between">
             <span>Monday - Friday</span>
@@ -70,4 +82,4 @@ const ContactInfo = () => {
   );
 };
 
-export default ContactInfo
+export default ContactInfo;
