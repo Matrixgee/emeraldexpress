@@ -34,7 +34,7 @@ const TrackedItem = () => {
             <div className="w-full h-1/3 flex border-b-2 border-black">
               <div className="w-[30%] h-full border-r-2 border-black p-4 text-[16px] flex justify-center flex-col">
                 <h5>Pickup date:</h5>
-                <p>{trackingData?.pickupDate}</p>
+                <p>{trackingData?.pickUpDate}</p>
               </div>
               <div className="w-[40%] h-full border-r-2 border-black p-4 text-[16px] flex justify-center flex-col">
                 <h5>Pickup time</h5>

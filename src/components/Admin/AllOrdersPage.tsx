@@ -1,4 +1,5 @@
 import { Search, Edit2, Trash2, X, Save } from "lucide-react";
+import { MdOutlineContentCopy } from "react-icons/md";
 import { useEffect, useState } from "react";
 import axios from "../config/axiosconfig";
 import toast from "react-hot-toast";
@@ -16,7 +17,7 @@ type Order = {
   expectedDelivery: string;
   carrier: string;
   totalFreight: string;
-  trackingId:string;
+  trackingId: string;
 };
 
 interface OrderResponse {
@@ -24,7 +25,19 @@ interface OrderResponse {
   message: string;
   data: Order[];
 }
+interface oneOrderDetailsProps {
+  trackingId:string;
+  receiverName:string;
+  shipperName:string;
+  destination:string;
+  origin:string;
+  totalFreight:string;
+  carrier:string;
+  expectedDeliveryDate:string;
+  receiverCountry:string;
+  shipperCountry:string;
 
+}
 const AllOrdersPage = () => {
   const statusStages = [
     { stage: 0, name: "Order Placed", percentage: 0 },
@@ -35,7 +48,6 @@ const AllOrdersPage = () => {
   ];
 
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [editingOrder, setEditingOrder] = useState<Order | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(
     null
@@ -79,10 +91,7 @@ const AllOrdersPage = () => {
       order.id.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.shipperName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.receiverName.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus =
-      statusFilter === "all" ||
-      order.status.toLowerCase() === statusFilter.toLowerCase();
-    return matchesSearch && matchesStatus;
+    return matchesSearch 
   });
 
   const handleEdit = (order: Order) => {
@@ -91,59 +100,59 @@ const AllOrdersPage = () => {
 
 
 
-const handleDelete = async (orderId: string) => {
-  try {
-    const adminToken = localStorage.getItem("token");
-    const headers = {
-      headers: { Authorization: `Bearer ${adminToken}` },
-    };
+  const handleDelete = async (orderId: string) => {
+    try {
+      const adminToken = localStorage.getItem("token");
+      const headers = {
+        headers: { Authorization: `Bearer ${adminToken}` },
+      };
 
-    await axios.delete(`/deleteOrder/${orderId}`, headers);
-    setOrders(orders.filter((order) => order.id !== Number(orderId)));
-    setShowDeleteConfirm(null);
-    console.log(`Order ${orderId} deleted successfully.`);
-  } catch (error) {
-    console.error("Failed to delete order:", error);
-  }
-};
+      await axios.delete(`/deleteOrder/${orderId}`, headers);
+      setOrders(orders.filter((order) => order.id !== Number(orderId)));
+      setShowDeleteConfirm(null);
+      console.log(`Order ${orderId} deleted successfully.`);
+    } catch (error) {
+      console.error("Failed to delete order:", error);
+    }
+  };
 
-const handleEditChange = (field: keyof Order, value: string | number) => {
-  if (!editingOrder) return;
-  const updatedOrder = { ...editingOrder, [field]: value };
-  if (field === "status") {
-    updatedOrder.stage = getStageFromStatus(value as string);
-  } else if (field === "stage") {
-    updatedOrder.status = getStatusFromStage(value as number);
-  }
-  setEditingOrder(updatedOrder);
-};
+  const handleEditChange = (field: keyof Order, value: string | number) => {
+    if (!editingOrder) return;
+    const updatedOrder = { ...editingOrder, [field]: value };
+    if (field === "status") {
+      updatedOrder.stage = getStageFromStatus(value as string);
+    } else if (field === "stage") {
+      updatedOrder.status = getStatusFromStage(value as number);
+    }
+    setEditingOrder(updatedOrder);
+  };
 
-const handleSaveEdit = async () => {
-  if (!editingOrder) return;
-  const loadingId = toast.loading("Saving...")
-  try {
-    setLoad(true)
-    const adminToken = localStorage.getItem("token");
-    const headers = {
-      headers: { Authorization: `Bearer ${adminToken}` },
-    };
-    const res = await axios.put(`/updateOrder/${editingOrder.id}`, editingOrder, headers);
-    console.log("Order updated:", res.data);
+  const handleSaveEdit = async () => {
+    if (!editingOrder) return;
+    const loadingId = toast.loading("Saving...")
+    try {
+      setLoad(true)
+      const adminToken = localStorage.getItem("token");
+      const headers = {
+        headers: { Authorization: `Bearer ${adminToken}` },
+      };
+      const res = await axios.put(`/updateOrder/${editingOrder.id}`, editingOrder, headers);
+      console.log("Order updated:", res.data);
 
-    setOrders(
-      orders.map((order) =>
-        order.id === editingOrder.id ? editingOrder : order
-      )
-    );
-    setEditingOrder(null);
-  } catch (err) {
-    console.error("Failed to update order:", err);
-    setLoad(false)
-  }finally{
-    setLoad(false)
-    toast.dismiss(loadingId)
-  }
-};
+      setOrders(
+        orders.map((order) =>
+          order.id === editingOrder.id ? editingOrder : order
+        )
+      );
+      setEditingOrder(null);
+    } catch (err) {
+      console.error("Failed to update order:", err);
+      setLoad(false)
+    } finally {
+      setLoad(false)
+      toast.dismiss(loadingId)
+    }
+  };
 
 
 
@@ -159,21 +168,57 @@ const handleSaveEdit = async () => {
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2">
           <div
-            className={`h-2 rounded-full transition-all duration-300 ${
-              stage === 4
-                ? "bg-green-500"
-                : stage >= 2
+            className={`h-2 rounded-full transition-all duration-300 ${stage === 4
+              ? "bg-green-500"
+              : stage >= 2
                 ? "bg-blue-500"
                 : stage >= 1
-                ? "bg-yellow-500"
-                : "bg-gray-400"
-            }`}
+                  ? "bg-yellow-500"
+                  : "bg-gray-400"
+              }`}
             style={{ width: `${percentage}%` }}
           ></div>
         </div>
       </div>
     );
   };
+  const [oneOrderDetails, setOneOrderDetails] = useState<oneOrderDetailsProps | null>(null);
+      const [isOpen, setIsOpen] = useState(false)
+  const closeModal = () => setIsOpen(false);
+
+  const getOrder = async (id:number) => {
+
+
+    const loadingId = toast.loading("Getting details...")
+    try {
+      const res = await axios.get(`/getOrder/${id}`, {
+        headers: {
+          Authorization: `Bearer ${adminToken}`,
+        },
+      });
+      console.log(res);
+      setOneOrderDetails(res.data.data)
+      setIsOpen(true)
+    } catch (error) {
+      console.log(error)
+    } finally {
+      toast.dismiss(loadingId)
+    }
+
+  }
+
+  console.log(oneOrderDetails);
+
+  const copyToClipboard = (text: string) => {
+  navigator.clipboard.writeText(text)
+    .then(() => {
+      toast.success("Copied to clipboard");
+    })
+    .catch(() => {
+      toast.error("Failed to copy");
+    });
+};
+
 
   return (
     <div className="p-0">
@@ -192,18 +237,6 @@ const handleSaveEdit = async () => {
               className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="all">All Status</option>
-            <option value="order placed">Order Placed</option>
-            <option value="processing">Processing</option>
-            <option value="in transit">In Transit</option>
-            <option value="out for delivery">Out for Delivery</option>
-            <option value="delivered">Delivered</option>
-          </select>
         </div>
       </div>
 
@@ -233,6 +266,9 @@ const handleSaveEdit = async () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Actions
                   </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    View all
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -240,8 +276,8 @@ const handleSaveEdit = async () => {
                   <tr key={order.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4">
                       <div>
-                        <div className="text-sm font-medium text-gray-900">
-                          {order.trackingId}
+                        <div className="text-sm font-[700] flex gap-2 text-gray-900">
+                          ID: <span className="flex flex-row items-center gap-2">{order.trackingId} <MdOutlineContentCopy cursor="pointer" size={16} onClick={() => copyToClipboard(order.trackingId)}/></span>
                         </div>
                         <div className="text-sm text-gray-500">
                           From: {order.shipperName}
@@ -299,6 +335,17 @@ const handleSaveEdit = async () => {
                         </button>
                       </div>
                     </td>
+                    <td className="">
+                      <button
+                        key={order.id}
+                        className="bg-blue-900 cursor-pointer rounded-sm px-4 py-2 text-white text-sm font-medium"
+                        onClick={() => {
+                          getOrder(order.id);
+                        }}
+                      >
+                        View
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -306,6 +353,49 @@ const handleSaveEdit = async () => {
           </div>
         </div>
       )}
+
+{isOpen && oneOrderDetails && (
+  <div className="fixed inset-0 bg-[#0000006f] flex items-center justify-center z-50">
+    <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+      <div className="flex justify-between items-center mb-7">
+        <h2 className="text-2xl font-semibold">Order Details</h2>
+        <button onClick={closeModal}>
+          <X className="h-7 w-7"/>
+        </button>
+      </div>
+
+      <div className="space-y-3 w-max">
+        <div>
+          <p className="font-medium text-xl flex flex-row gap-3 ">Tracking ID: <span className="font-[400] flex flex-row items-center gap-3">{oneOrderDetails.trackingId} <MdOutlineContentCopy size={20} cursor="pointer" onClick={() => copyToClipboard(oneOrderDetails.trackingId)}/></span></p> 
+        </div>
+        <div>
+          <p className="font-medium text-xl ">Shipper Name: <span className="font-[400]">{oneOrderDetails.shipperName}</span></p> 
+        </div>
+        <div>
+          <p className="font-medium text-xl ">Shipper Country: <span className="font-[400]">{oneOrderDetails.shipperCountry}</span></p> 
+        </div>
+        <div>
+          <p className="font-medium text-xl ">Receiver Name: <span className="font-[400]">{oneOrderDetails.receiverName}</span></p> 
+        </div>
+        <div>
+          <p className="font-medium text-xl ">Receiver Country: <span className="font-[400]">{oneOrderDetails.receiverCountry}</span></p> 
+        </div>
+        <div>
+          <p className="font-medium text-xl ">Origin: <span className="font-[400]">{oneOrderDetails.origin}</span></p> 
+        </div>
+        <div>
+          <p className="font-medium text-xl ">Destination: <span className="font-[400]">{oneOrderDetails.destination}</span></p> 
+        </div>
+        <div>
+          <p className="font-medium text-xl ">Carrier: <span className="font-[400]">{oneOrderDetails.carrier}</span></p> 
+        </div>
+        <div>
+          <p className="font-medium text-xl ">Expected date: <span className="font-[400]">{oneOrderDetails.expectedDeliveryDate}</span></p> 
+        </div>
+      </div>
+    </div>
+  </div>
+)}
 
       {/* Edit Modal */}
       {editingOrder && (
@@ -330,7 +420,7 @@ const handleSaveEdit = async () => {
                   <input
                     type="text"
                     value={editingOrder.id}
-                    onChange={(e:any)=>e.target.value}
+                    onChange={(e: any) => e.target.value}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -362,7 +452,7 @@ const handleSaveEdit = async () => {
                   <input
                     type="text"
                     value={editingOrder.shipperName}
-                    onChange={(e)=>handleEditChange("shipperName", e.target.value)}
+                    onChange={(e) => handleEditChange("shipperName", e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -373,7 +463,7 @@ const handleSaveEdit = async () => {
                   <input
                     type="text"
                     value={editingOrder.receiverName}
-                    onChange={(e)=> handleEditChange("receiverName", e.target.value)}
+                    onChange={(e) => handleEditChange("receiverName", e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -387,7 +477,7 @@ const handleSaveEdit = async () => {
                   <input
                     type="text"
                     value={editingOrder.origin}
-                    onChange={(e)=>handleEditChange("origin", e.target.value)}
+                    onChange={(e) => handleEditChange("origin", e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -398,7 +488,7 @@ const handleSaveEdit = async () => {
                   <input
                     type="text"
                     value={editingOrder.destination}
-                    onChange={(e)=>handleEditChange("destination", e.target.value)}
+                    onChange={(e) => handleEditChange("destination", e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -412,7 +502,7 @@ const handleSaveEdit = async () => {
                   <input
                     type="date"
                     value={editingOrder.departureDate}
-                    onChange={(e)=>handleEditChange("departureDate", e.target.value)}
+                    onChange={(e) => handleEditChange("departureDate", e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -423,7 +513,7 @@ const handleSaveEdit = async () => {
                   <input
                     type="date"
                     value={editingOrder.expectedDelivery}
-                    onChange={(e)=>handleEditChange("expectedDelivery", e.target.value)}
+                    onChange={(e) => handleEditChange("expectedDelivery", e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -437,7 +527,7 @@ const handleSaveEdit = async () => {
                   <input
                     type="text"
                     value={editingOrder.carrier}
-                    onChange={(e)=>handleEditChange("carrier", e.target.value)}
+                    onChange={(e) => handleEditChange("carrier", e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -448,7 +538,7 @@ const handleSaveEdit = async () => {
                   <input
                     type="text"
                     value={editingOrder.totalFreight}
-                    onChange={(e)=>handleEditChange("totalFreight", e.target.value)}
+                    onChange={(e) => handleEditChange("totalFreight", e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -512,4 +602,4 @@ const handleSaveEdit = async () => {
   );
 };
 
-export default AllOrdersPage;
+export default AllOrdersPage; 
