@@ -32,7 +32,7 @@ const Header = () => {
 
   return (
     <motion.nav 
-  className="bg-[#274cb2] text-white shadow-lg fixed w-full top-0 z-50"
+  className="bg-[#274cb2] text-white shadow-lg absolute w-full top-0 z-50"
   initial={{ y: -100 }}
   animate={{ y: showHeader ? 0 : -100 }}
   transition={{ 
@@ -131,7 +131,7 @@ const Header = () => {
             transition={{ duration: 0.2 }}
           >
             {[
-              { to: "/home", label: "Home" },
+              { to: "/", label: "Home" },
               { to: "/about", label: "About" },
               { to: "/contact", label: "Contact" }
             ].map((item, index) => (
