@@ -29,7 +29,7 @@ const ContactInfo = () => {
             <Phone className="text-blue-900 mr-4" size={24} />
             <div>
               <p className="font-semibold text-blue-900">Phone</p>
-              <p className="text-gray-600">+1 (800) 555-LOGI</p>
+              <p className="text-gray-600">+12283016351</p>
             </div>
           </div>
 
@@ -46,9 +46,9 @@ const ContactInfo = () => {
             <div>
               <p className="font-semibold text-blue-900">Address</p>
               <p className="text-gray-600">
-                123 Logistics Ave
+                100 11th Ave Condominium
                 <br />
-                New York, NY 10001
+                NY, USA
               </p>
             </div>
           </div>
