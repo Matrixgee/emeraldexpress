@@ -108,7 +108,7 @@ const AllOrdersPage = () => {
       await axios.delete(`/deleteOrder/${orderId}`, headers);
       setOrders(orders.filter((order) => order.id !== Number(orderId)));
       setShowDeleteConfirm(null);
-      toast.success(`Order ${orderId} deleted successfully.`)
+      toast.success(`Order ${orderId} deleted successfully.`);
       console.log(`Order ${orderId} deleted successfully.`);
     } catch (error) {
       console.error("Failed to delete order:", error);
@@ -589,12 +589,10 @@ const AllOrdersPage = () => {
                   </label>
                   <input
                     type="date"
-
-                    value={editingOrder.expectedDelivery}
+                    value={editingOrder.expectedDeliveryDate}
                     onChange={(e) =>
-                      handleEditChange("expectedDelivery", e.target.value)
+                      handleEditChange("expectedDeliveryDate", e.target.value)
                     }
-
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
