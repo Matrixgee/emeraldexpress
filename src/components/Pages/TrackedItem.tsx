@@ -62,7 +62,12 @@ const TrackedItem = () => {
                 <h5 className="font-semibold">Carrier:</h5>
                 <p>{trackingData?.carrier}</p>
               </div>
-
+              <div className="w-[40%] h-full border-r-2 border-black p-4 text-[16px] flex justify-center flex-col">
+                <h5 className="font-semibold">Current Location:</h5>
+                <p className="max-sm:text-sm">
+                  {trackingData?.currentLocation}
+                </p>
+              </div>
               <div className="w-[30%] p-4 h-full text-[16px] flex justify-center flex-col">
                 <h5 className="font-semibold">Departure Time:</h5>
                 <p>{trackingData?.departureTime}</p>
@@ -82,6 +87,7 @@ const TrackedItem = () => {
                   <div className="p-4">{trackingData?.shipperName}</div>
                 </div>
                 <div className=" p-4 text-[17px] h-[70%] flex flex-col justify-center">
+                  <h3 className="font-semibold"> Sender Details</h3>
                   <div className="mb-2">{trackingData?.shipperAddress}</div>
                   <div className="text-blue-600 underline break-all">
                     {trackingData?.shipperEmail}
@@ -96,6 +102,7 @@ const TrackedItem = () => {
                   <div className="p-4">{trackingData?.receiverName}</div>
                 </div>
                 <div className=" p-4 text-[17px] h-[70%] flex flex-col justify-center">
+                  <h3 className="font-semibold">Receiver Details</h3>
                   <div className="mb-2">{trackingData?.receiverAddress}</div>
                   <div className="mb-2">{trackingData?.receiverNumber}</div>
                   <div className="text-blue-600 underline break-all">

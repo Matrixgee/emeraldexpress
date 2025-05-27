@@ -12,6 +12,7 @@ type Order = {
   origin: string;
   destination: string;
   status: string;
+  currentLocation: string;
   stage: number;
   departureDate: string;
   expectedDeliveryDate: string;
@@ -26,17 +27,16 @@ interface OrderResponse {
   data: Order[];
 }
 interface oneOrderDetailsProps {
-  trackingId:string;
-  receiverName:string;
-  shipperName:string;
-  destination:string;
-  origin:string;
-  totalFreight:string;
-  carrier:string;
-  expectedDeliveryDate:string;
-  receiverCountry:string;
-  shipperCountry:string;
-
+  trackingId: string;
+  receiverName: string;
+  shipperName: string;
+  destination: string;
+  origin: string;
+  totalFreight: string;
+  carrier: string;
+  expectedDeliveryDate: string;
+  receiverCountry: string;
+  shipperCountry: string;
 }
 const AllOrdersPage = () => {
   const statusStages = [
@@ -54,7 +54,7 @@ const AllOrdersPage = () => {
   );
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [load, setLoad] = useState<boolean>(false)
+  const [load, setLoad] = useState<boolean>(false);
   const adminToken = localStorage.getItem("token");
   const headers = {
     headers: { Authorization: `Bearer ${adminToken}` },
@@ -91,14 +91,12 @@ const AllOrdersPage = () => {
       order.id.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.shipperName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.receiverName.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesSearch 
+    return matchesSearch;
   });
 
   const handleEdit = (order: Order) => {
     setEditingOrder({ ...order });
   };
-
-
 
   const handleDelete = async (orderId: string) => {
     try {
@@ -130,14 +128,18 @@ const AllOrdersPage = () => {
 
   const handleSaveEdit = async () => {
     if (!editingOrder) return;
-    const loadingId = toast.loading("Saving...")
+    const loadingId = toast.loading("Saving...");
     try {
-      setLoad(true)
+      setLoad(true);
       const adminToken = localStorage.getItem("token");
       const headers = {
         headers: { Authorization: `Bearer ${adminToken}` },
       };
-      const res = await axios.put(`/updateOrder/${editingOrder.id}`, editingOrder, headers);
+      const res = await axios.put(
+        `/updateOrder/${editingOrder.id}`,
+        editingOrder,
+        headers
+      );
       console.log("Order updated:", res.data);
 
       setOrders(
@@ -148,14 +150,12 @@ const AllOrdersPage = () => {
       setEditingOrder(null);
     } catch (err) {
       console.error("Failed to update order:", err);
-      setLoad(false)
+      setLoad(false);
     } finally {
-      setLoad(false)
-      toast.dismiss(loadingId)
+      setLoad(false);
+      toast.dismiss(loadingId);
     }
   };
-
-
 
   const ProgressBar = ({ stage }: { stage: number }) => {
     const currentStage = statusStages.find((s) => s.stage === stage);
@@ -169,28 +169,28 @@ const AllOrdersPage = () => {
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2">
           <div
-            className={`h-2 rounded-full transition-all duration-300 ${stage === 4
-              ? "bg-green-500"
-              : stage >= 2
+            className={`h-2 rounded-full transition-all duration-300 ${
+              stage === 4
+                ? "bg-green-500"
+                : stage >= 2
                 ? "bg-blue-500"
                 : stage >= 1
-                  ? "bg-yellow-500"
-                  : "bg-gray-400"
-              }`}
+                ? "bg-yellow-500"
+                : "bg-gray-400"
+            }`}
             style={{ width: `${percentage}%` }}
           ></div>
         </div>
       </div>
     );
   };
-  const [oneOrderDetails, setOneOrderDetails] = useState<oneOrderDetailsProps | null>(null);
-      const [isOpen, setIsOpen] = useState(false)
+  const [oneOrderDetails, setOneOrderDetails] =
+    useState<oneOrderDetailsProps | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
   const closeModal = () => setIsOpen(false);
 
-  const getOrder = async (id:number) => {
-
-
-    const loadingId = toast.loading("Getting details...")
+  const getOrder = async (id: number) => {
+    const loadingId = toast.loading("Getting details...");
     try {
       const res = await axios.get(`/getOrder/${id}`, {
         headers: {
@@ -198,28 +198,27 @@ const AllOrdersPage = () => {
         },
       });
       console.log(res);
-      setOneOrderDetails(res.data.data)
-      setIsOpen(true)
+      setOneOrderDetails(res.data.data);
+      setIsOpen(true);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     } finally {
-      toast.dismiss(loadingId)
+      toast.dismiss(loadingId);
     }
-
-  }
+  };
 
   console.log(oneOrderDetails);
 
   const copyToClipboard = (text: string) => {
-  navigator.clipboard.writeText(text)
-    .then(() => {
-      toast.success("Copied to clipboard");
-    })
-    .catch(() => {
-      toast.error("Failed to copy");
-    });
-};
-
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        toast.success("Copied to clipboard");
+      })
+      .catch(() => {
+        toast.error("Failed to copy");
+      });
+  };
 
   return (
     <div className="p-0">
@@ -278,7 +277,15 @@ const AllOrdersPage = () => {
                     <td className="px-6 py-4">
                       <div>
                         <div className="text-sm font-[700] flex gap-2 text-gray-900">
-                          ID: <span className="flex flex-row items-center gap-2">{order.trackingId} <MdOutlineContentCopy cursor="pointer" size={16} onClick={() => copyToClipboard(order.trackingId)}/></span>
+                          ID:{" "}
+                          <span className="flex flex-row items-center gap-2">
+                            {order.trackingId}{" "}
+                            <MdOutlineContentCopy
+                              cursor="pointer"
+                              size={16}
+                              onClick={() => copyToClipboard(order.trackingId)}
+                            />
+                          </span>
                         </div>
                         <div className="text-sm text-gray-500">
                           From: {order.shipperName}
@@ -355,48 +362,96 @@ const AllOrdersPage = () => {
         </div>
       )}
 
-{isOpen && oneOrderDetails && (
-  <div className="fixed inset-0 bg-[#0000006f] flex items-center justify-center z-50">
-    <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-      <div className="flex justify-between items-center mb-7">
-        <h2 className="text-2xl font-semibold">Order Details</h2>
-        <button onClick={closeModal}>
-          <X className="h-7 w-7"/>
-        </button>
-      </div>
+      {isOpen && oneOrderDetails && (
+        <div className="fixed inset-0 bg-[#0000006f] flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <div className="flex justify-between items-center mb-7">
+              <h2 className="text-2xl font-semibold">Order Details</h2>
+              <button onClick={closeModal}>
+                <X className="h-7 w-7" />
+              </button>
+            </div>
 
-      <div className="space-y-3 w-max">
-        <div>
-          <p className="font-medium text-xl flex flex-row gap-3 ">Tracking ID: <span className="font-[400] flex flex-row items-center gap-3">{oneOrderDetails.trackingId} <MdOutlineContentCopy size={20} cursor="pointer" onClick={() => copyToClipboard(oneOrderDetails.trackingId)}/></span></p> 
+            <div className="space-y-3 w-max">
+              <div>
+                <p className="font-medium text-xl flex flex-row gap-3 ">
+                  Tracking ID:{" "}
+                  <span className="font-[400] flex flex-row items-center gap-3">
+                    {oneOrderDetails.trackingId}{" "}
+                    <MdOutlineContentCopy
+                      size={20}
+                      cursor="pointer"
+                      onClick={() =>
+                        copyToClipboard(oneOrderDetails.trackingId)
+                      }
+                    />
+                  </span>
+                </p>
+              </div>
+              <div>
+                <p className="font-medium text-xl ">
+                  Shipper Name:{" "}
+                  <span className="font-[400]">
+                    {oneOrderDetails.shipperName}
+                  </span>
+                </p>
+              </div>
+              <div>
+                <p className="font-medium text-xl ">
+                  Shipper Country:{" "}
+                  <span className="font-[400]">
+                    {oneOrderDetails.shipperCountry}
+                  </span>
+                </p>
+              </div>
+              <div>
+                <p className="font-medium text-xl ">
+                  Receiver Name:{" "}
+                  <span className="font-[400]">
+                    {oneOrderDetails.receiverName}
+                  </span>
+                </p>
+              </div>
+              <div>
+                <p className="font-medium text-xl ">
+                  Receiver Country:{" "}
+                  <span className="font-[400]">
+                    {oneOrderDetails.receiverCountry}
+                  </span>
+                </p>
+              </div>
+              <div>
+                <p className="font-medium text-xl ">
+                  Origin:{" "}
+                  <span className="font-[400]">{oneOrderDetails.origin}</span>
+                </p>
+              </div>
+              <div>
+                <p className="font-medium text-xl ">
+                  Destination:{" "}
+                  <span className="font-[400]">
+                    {oneOrderDetails.destination}
+                  </span>
+                </p>
+              </div>
+              <div>
+                <p className="font-medium text-xl ">
+                  Carrier:{" "}
+                  <span className="font-[400]">{oneOrderDetails.carrier}</span>
+                </p>
+              </div>
+              <div>
+                <p className="font-medium text-xl ">
+                  Expected date:{" "}
+                  <span className="font-[400]">
+                    {oneOrderDetails.expectedDeliveryDate}
+                  </span>
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
-        <div>
-          <p className="font-medium text-xl ">Shipper Name: <span className="font-[400]">{oneOrderDetails.shipperName}</span></p> 
-        </div>
-        <div>
-          <p className="font-medium text-xl ">Shipper Country: <span className="font-[400]">{oneOrderDetails.shipperCountry}</span></p> 
-        </div>
-        <div>
-          <p className="font-medium text-xl ">Receiver Name: <span className="font-[400]">{oneOrderDetails.receiverName}</span></p> 
-        </div>
-        <div>
-          <p className="font-medium text-xl ">Receiver Country: <span className="font-[400]">{oneOrderDetails.receiverCountry}</span></p> 
-        </div>
-        <div>
-          <p className="font-medium text-xl ">Origin: <span className="font-[400]">{oneOrderDetails.origin}</span></p> 
-        </div>
-        <div>
-          <p className="font-medium text-xl ">Destination: <span className="font-[400]">{oneOrderDetails.destination}</span></p> 
-        </div>
-        <div>
-          <p className="font-medium text-xl ">Carrier: <span className="font-[400]">{oneOrderDetails.carrier}</span></p> 
-        </div>
-        <div>
-          <p className="font-medium text-xl ">Expected date: <span className="font-[400]">{oneOrderDetails.expectedDeliveryDate}</span></p> 
-        </div>
-      </div>
-    </div>
-  </div>
-)}
+      )}
 
       {/* Edit Modal */}
       {editingOrder && (
@@ -453,7 +508,9 @@ const AllOrdersPage = () => {
                   <input
                     type="text"
                     value={editingOrder.shipperName}
-                    onChange={(e) => handleEditChange("shipperName", e.target.value)}
+                    onChange={(e) =>
+                      handleEditChange("shipperName", e.target.value)
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -464,7 +521,9 @@ const AllOrdersPage = () => {
                   <input
                     type="text"
                     value={editingOrder.receiverName}
-                    onChange={(e) => handleEditChange("receiverName", e.target.value)}
+                    onChange={(e) =>
+                      handleEditChange("receiverName", e.target.value)
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -489,7 +548,22 @@ const AllOrdersPage = () => {
                   <input
                     type="text"
                     value={editingOrder.destination}
-                    onChange={(e) => handleEditChange("destination", e.target.value)}
+                    onChange={(e) =>
+                      handleEditChange("destination", e.target.value)
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+                <div className="w-[300px]">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Current Location
+                  </label>
+                  <input
+                    type="text"
+                    value={editingOrder.currentLocation}
+                    onChange={(e) =>
+                      handleEditChange("currentLocation", e.target.value)
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -503,7 +577,9 @@ const AllOrdersPage = () => {
                   <input
                     type="date"
                     value={editingOrder.departureDate}
-                    onChange={(e) => handleEditChange("departureDate", e.target.value)}
+                    onChange={(e) =>
+                      handleEditChange("departureDate", e.target.value)
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -513,8 +589,12 @@ const AllOrdersPage = () => {
                   </label>
                   <input
                     type="date"
-                    value={editingOrder.expectedDeliveryDate}
-                    onChange={(e) => handleEditChange("expectedDeliveryDate", e.target.value)}
+
+                    value={editingOrder.expectedDelivery}
+                    onChange={(e) =>
+                      handleEditChange("expectedDelivery", e.target.value)
+                    }
+
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -528,7 +608,9 @@ const AllOrdersPage = () => {
                   <input
                     type="text"
                     value={editingOrder.carrier}
-                    onChange={(e) => handleEditChange("carrier", e.target.value)}
+                    onChange={(e) =>
+                      handleEditChange("carrier", e.target.value)
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -539,7 +621,9 @@ const AllOrdersPage = () => {
                   <input
                     type="text"
                     value={editingOrder.totalFreight}
-                    onChange={(e) => handleEditChange("totalFreight", e.target.value)}
+                    onChange={(e) =>
+                      handleEditChange("totalFreight", e.target.value)
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -603,4 +687,4 @@ const AllOrdersPage = () => {
   );
 };
 
-export default AllOrdersPage; 
+export default AllOrdersPage;
