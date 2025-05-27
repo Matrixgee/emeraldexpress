@@ -98,7 +98,7 @@ const TrackingSection = () => {
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
               <input
                 type="text"
-                placeholder="Enter Tracking ID (e.g., EECS123456789)"
+                placeholder="Enter Tracking ID (e.g., EE123456789)"
                 value={trackingId}
                 onChange={(e) => setTrackingId(e.target.value)}
                 className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
