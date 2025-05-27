@@ -1,6 +1,7 @@
 import { Search, Edit2, Trash2, X, Save } from "lucide-react";
 import { useEffect, useState } from "react";
 import axios from "../config/axiosconfig";
+import toast from "react-hot-toast";
 // import toast from "react-hot-toast";
 
 type Order = {
@@ -41,6 +42,7 @@ const AllOrdersPage = () => {
   );
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [load, setLoad] = useState<boolean>(false)
   const adminToken = localStorage.getItem("token");
   const headers = {
     headers: { Authorization: `Bearer ${adminToken}` },
@@ -87,36 +89,63 @@ const AllOrdersPage = () => {
     setEditingOrder({ ...order });
   };
 
-  const handleSaveEdit = () => {
-    if (!editingOrder) return;
+
+
+const handleDelete = async (orderId: string) => {
+  try {
+    const adminToken = localStorage.getItem("token");
+    const headers = {
+      headers: { Authorization: `Bearer ${adminToken}` },
+    };
+
+    await axios.delete(`/deleteOrder/${orderId}`, headers);
+    setOrders(orders.filter((order) => order.id !== Number(orderId)));
+    setShowDeleteConfirm(null);
+    console.log(`Order ${orderId} deleted successfully.`);
+  } catch (error) {
+    console.error("Failed to delete order:", error);
+  }
+};
+
+const handleEditChange = (field: keyof Order, value: string | number) => {
+  if (!editingOrder) return;
+  const updatedOrder = { ...editingOrder, [field]: value };
+  if (field === "status") {
+    updatedOrder.stage = getStageFromStatus(value as string);
+  } else if (field === "stage") {
+    updatedOrder.status = getStatusFromStage(value as number);
+  }
+  setEditingOrder(updatedOrder);
+};
+
+const handleSaveEdit = async () => {
+  if (!editingOrder) return;
+  const loadingId = toast.loading("Saving...")
+  try {
+    setLoad(true)
+    const adminToken = localStorage.getItem("token");
+    const headers = {
+      headers: { Authorization: `Bearer ${adminToken}` },
+    };
+    const res = await axios.put(`/updateOrder/${editingOrder.id}`, editingOrder, headers);
+    console.log("Order updated:", res.data);
+
     setOrders(
       orders.map((order) =>
         order.id === editingOrder.id ? editingOrder : order
       )
     );
     setEditingOrder(null);
-  };
+  } catch (err) {
+    console.error("Failed to update order:", err);
+    setLoad(false)
+  }finally{
+    setLoad(false)
+    toast.dismiss(loadingId)
+  }
+};
 
-  const handleDelete = (orderId: string) => {
-    setOrders(orders.filter((order) => order.id !== Number(orderId)));
-    setShowDeleteConfirm(null);
-  };
 
-  const handleEditChange = (field: keyof Order, value: string | number) => {
-    if (!editingOrder) return;
-    const updatedOrder = { ...editingOrder, [field]: value };
-
-    // If status is changed, update the stage accordingly
-    if (field === "status") {
-      updatedOrder.stage = getStageFromStatus(value as string);
-    }
-    // If stage is changed, update the status accordingly
-    if (field === "stage") {
-      updatedOrder.status = getStatusFromStage(value as number);
-    }
-
-    setEditingOrder(updatedOrder);
-  };
 
   const ProgressBar = ({ stage }: { stage: number }) => {
     const currentStage = statusStages.find((s) => s.stage === stage);
@@ -248,7 +277,7 @@ const AllOrdersPage = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                      {order.totalFreight}
+                      $ {order.totalFreight}
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex space-x-2">
@@ -280,7 +309,7 @@ const AllOrdersPage = () => {
 
       {/* Edit Modal */}
       {editingOrder && (
-        <div className="fixed inset-0 bg-[#0000006f] flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-[#0000006f] p-4 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold">Edit Order</h3>
@@ -301,7 +330,7 @@ const AllOrdersPage = () => {
                   <input
                     type="text"
                     value={editingOrder.id}
-                    onChange={(e) => handleEditChange("id", e.target.value)}
+                    onChange={(e:any)=>e.target.value}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -333,9 +362,7 @@ const AllOrdersPage = () => {
                   <input
                     type="text"
                     value={editingOrder.shipperName}
-                    onChange={(e) =>
-                      handleEditChange("shipperName", e.target.value)
-                    }
+                    onChange={(e)=>handleEditChange("shipperName", e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -346,9 +373,7 @@ const AllOrdersPage = () => {
                   <input
                     type="text"
                     value={editingOrder.receiverName}
-                    onChange={(e) =>
-                      handleEditChange("receiverName", e.target.value)
-                    }
+                    onChange={(e)=> handleEditChange("receiverName", e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -362,7 +387,7 @@ const AllOrdersPage = () => {
                   <input
                     type="text"
                     value={editingOrder.origin}
-                    onChange={(e) => handleEditChange("origin", e.target.value)}
+                    onChange={(e)=>handleEditChange("origin", e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -373,9 +398,7 @@ const AllOrdersPage = () => {
                   <input
                     type="text"
                     value={editingOrder.destination}
-                    onChange={(e) =>
-                      handleEditChange("destination", e.target.value)
-                    }
+                    onChange={(e)=>handleEditChange("destination", e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -389,9 +412,7 @@ const AllOrdersPage = () => {
                   <input
                     type="date"
                     value={editingOrder.departureDate}
-                    onChange={(e) =>
-                      handleEditChange("departureDate", e.target.value)
-                    }
+                    onChange={(e)=>handleEditChange("departureDate", e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -402,9 +423,7 @@ const AllOrdersPage = () => {
                   <input
                     type="date"
                     value={editingOrder.expectedDelivery}
-                    onChange={(e) =>
-                      handleEditChange("expectedDelivery", e.target.value)
-                    }
+                    onChange={(e)=>handleEditChange("expectedDelivery", e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -418,9 +437,7 @@ const AllOrdersPage = () => {
                   <input
                     type="text"
                     value={editingOrder.carrier}
-                    onChange={(e) =>
-                      handleEditChange("carrier", e.target.value)
-                    }
+                    onChange={(e)=>handleEditChange("carrier", e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -431,15 +448,11 @@ const AllOrdersPage = () => {
                   <input
                     type="text"
                     value={editingOrder.totalFreight}
-                    onChange={(e) =>
-                      handleEditChange("totalFreight", e.target.value)
-                    }
+                    onChange={(e)=>handleEditChange("totalFreight", e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
               </div>
-
-              {/* Progress Preview */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Progress Preview
@@ -462,7 +475,7 @@ const AllOrdersPage = () => {
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center space-x-2"
               >
                 <Save className="w-4 h-4" />
-                <span>Save Changes</span>
+                <span>{load ? "Saving..." : "Save Changes"}</span>
               </button>
             </div>
           </div>
@@ -471,7 +484,7 @@ const AllOrdersPage = () => {
 
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-[#0000006f] flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-[#0000006f] px-4 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <h3 className="text-lg font-semibold mb-4">Confirm Delete</h3>
             <p className="text-gray-600 mb-6">

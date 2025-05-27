@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import axios from "../config/axiosconfig";
+import { useNavigate } from "react-router-dom";
 
 interface Country {
   country: string;
@@ -115,17 +116,14 @@ const CreateOrderPage = () => {
     }
   };
 
-  const generateTrackingId = () => {
-    return 'EECS' + Date.now().toString().slice(-8) + Math.random().toString(36).substr(2, 4).toUpperCase();
-  };
-
   const [loading, setLoading] = useState(false)
-  const [trackingId, setTrackingId] = useState("")
+  const navigate = useNavigate()
 
   const adminToken = localStorage.getItem("token")
   const headers = {
     headers: { Authorization: `Bearer ${adminToken}` },
   }
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     const loadingId = toast.loading("Creating Order...")
@@ -135,7 +133,8 @@ const CreateOrderPage = () => {
       const res = await axios.post("/createOrder", formData, headers)
       console.log(res)
       toast.success("Order created Successfully")
-      setTrackingId(generateTrackingId())
+      navigate("/admin-dashboard/orders")
+      
     } catch (error) {
       console.log(error)
       toast.error("Error creating order, Please check and try again")
@@ -146,13 +145,12 @@ const CreateOrderPage = () => {
 
     console.log("Order created:", {
       ...formData,
-      trackingId,
       progressPercentage: getProgressPercentage(formData.stage),
     });
 
 
 
-    toast.success(`Order created! Tracking ID: ${trackingId}`);
+
     setFormData(defaultFormData);
   };
 
@@ -236,7 +234,6 @@ const CreateOrderPage = () => {
           </div>
         </div>
 
-        {/* Receiver Details */}
         <div className="bg-white rounded-lg shadow p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Receiver Details</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
