@@ -41,7 +41,6 @@ import axios from "./config/axiosconfig";
 
 const TrackingSection = () => {
   const [trackingId, setTrackingId] = useState("");
-  // const [trackingResult, setTrackingResult] = useState<TrackingDetails | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
