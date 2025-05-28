@@ -186,7 +186,7 @@ const TrackedItem = () => {
               <div className="w-1/2 max-md:w-full">
                 <div className="flex text-[17px] w-full h-[30%] border-b-2 max-md:border-t-2 border-black">
                   <div className="w-[35%] p-4 border-r-2 border-black font-semibold">
-                    Consigner
+                    Consignee
                   </div>
                   <div className="p-4">{trackingData?.receiverName}</div>
                 </div>
@@ -217,10 +217,10 @@ const TrackedItem = () => {
                 <div className="font-semibold">Weight:</div>
                 <div>{trackingData?.weight} kg</div>
               </div>
-              <div className="p-4 sm:p-3 border-r-2 text-[17px] border-black">
+              {/* <div className="p-4 sm:p-3 border-r-2 text-[17px] border-black">
                 <div className="font-semibold">Total Freight:</div>
                 <div>${trackingData?.totalFreight}</div>
-              </div>
+              </div> */}
               <div className="p-4 sm:p-3 text-[17px]">
                 <div className="font-semibold">Quantity:</div>
                 <div>{trackingData?.quantity}</div>
