@@ -2,11 +2,12 @@ import { Package } from 'lucide-react';
 
 const Home = () => {
   const statusStages = [
-    { stage: 0, name: "Order Placed", percentage: 0 },
-    { stage: 1, name: "Processing", percentage: 25 },
-    { stage: 2, name: "In Transit", percentage: 50 },
-    { stage: 3, name: "Out for Delivery", percentage: 75 },
-    { stage: 4, name: "Delivered", percentage: 100 }
+    { stage: 1, name: "Processing", percentage: 0 },
+    { stage: 2, name: "Out for Delivery", percentage: 25 },
+    { stage: 3, name: "In Transit", percentage: 25 },
+    { stage: 4, name: "On Hold", percentage: 50 },
+    { stage: 5, name: "Delivered", percentage: 75 },
+    { stage: 6, name: "Picked Up", percentage: 100 }
   ];
 
   const mockOrders = [

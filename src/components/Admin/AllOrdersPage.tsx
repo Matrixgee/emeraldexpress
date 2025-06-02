@@ -1,4 +1,4 @@
-import { Search, Edit2, Trash2, X, Save } from "lucide-react";
+import { Search, Edit2, Trash2, X, Save, LucideHistory } from "lucide-react";
 import { MdOutlineContentCopy } from "react-icons/md";
 import { useEffect, useState } from "react";
 import axios from "../config/axiosconfig";
@@ -19,6 +19,7 @@ type Order = {
   carrier: string;
   totalFreight: string;
   trackingId: string;
+  comment:string;
 };
 
 interface OrderResponse {
@@ -125,21 +126,24 @@ const AllOrdersPage = () => {
     }
     setEditingOrder(updatedOrder);
   };
+ const [targetedTrackingId, setTargetedTrackingId] = useState<string | null>(null);
+ console.log("TrackingId",targetedTrackingId)
 
   const handleSaveEdit = async () => {
     if (!editingOrder) return;
     const loadingId = toast.loading("Saving...");
     try {
       setLoad(true);
-      const adminToken = localStorage.getItem("token");
-      const headers = {
-        headers: { Authorization: `Bearer ${adminToken}` },
-      };
+      // const adminToken = localStorage.getItem("token");
+      // const headers = {
+      //   headers: { Authorization: `Bearer ${adminToken}` },
+      // };
       const res = await axios.put(
-        `/updateOrder/${editingOrder.id}`,
+        `/updateByTrackingId/${targetedTrackingId}`,
         editingOrder,
-        headers
+        // headers
       );
+      
       console.log("Order updated:", res.data);
 
       setOrders(
@@ -207,8 +211,6 @@ const AllOrdersPage = () => {
     }
   };
 
-  console.log(oneOrderDetails);
-
   const copyToClipboard = (text: string) => {
     navigator.clipboard
       .writeText(text)
@@ -268,6 +270,9 @@ const AllOrdersPage = () => {
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     View all
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    History
                   </th>
                 </tr>
               </thead>
@@ -330,7 +335,7 @@ const AllOrdersPage = () => {
                           className="text-blue-600 hover:text-blue-900 p-1 rounded"
                           title="Edit order"
                         >
-                          <Edit2 className="w-4 h-4" />
+                          <Edit2 className="w-4 h-4" onClick={()=>setTargetedTrackingId(order.trackingId)}/>
                         </button>
                         <button
                           onClick={() =>
@@ -344,15 +349,23 @@ const AllOrdersPage = () => {
                       </div>
                     </td>
                     <td className="">
-                      <button
+                      <div className="flex justify-center pr-6 max-md:pr-0">
+                        <button
                         key={order.id}
                         className="bg-blue-900 cursor-pointer rounded-sm px-4 py-2 text-white text-sm font-medium"
                         onClick={() => {
+                          setTargetedTrackingId(order.trackingId)
                           getOrder(order.id);
                         }}
                       >
                         View
                       </button>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="cursor-pointer flex justify-center">
+                        <LucideHistory/>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -536,7 +549,7 @@ const AllOrdersPage = () => {
                   </label>
                   <input
                     type="text"
-                    value={editingOrder.origin}
+                    value={editingOrder.origin ?? ''}
                     onChange={(e) => handleEditChange("origin", e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
@@ -625,6 +638,18 @@ const AllOrdersPage = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Comment
+                  </label>
+                  <textarea
+                    value={editingOrder.comment}
+                    onChange={(e) =>
+                      handleEditChange("comment", e.target.value)
+                    }
+                    className="w-full outline-0 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -644,7 +669,10 @@ const AllOrdersPage = () => {
                 Cancel
               </button>
               <button
-                onClick={handleSaveEdit}
+                onClick={() => {
+                          setTargetedTrackingId(editingOrder.trackingId)
+                          handleSaveEdit()
+                        }}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center space-x-2"
               >
                 <Save className="w-4 h-4" />
