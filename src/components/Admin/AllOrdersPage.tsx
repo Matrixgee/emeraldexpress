@@ -19,7 +19,7 @@ type Order = {
   carrier: string;
   totalFreight: string;
   trackingId: string;
-  comment:string;
+  comment: string;
 };
 
 interface OrderResponse {
@@ -50,6 +50,8 @@ const AllOrdersPage = () => {
 
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [editingOrder, setEditingOrder] = useState<Order | null>(null);
+  console.log(editingOrder?.id);
+
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(
     null
   );
@@ -126,24 +128,33 @@ const AllOrdersPage = () => {
     }
     setEditingOrder(updatedOrder);
   };
- const [targetedTrackingId, setTargetedTrackingId] = useState<string | null>(null);
- console.log("TrackingId",targetedTrackingId)
+  const [targetedTrackingId, setTargetedTrackingId] = useState<string | null>(
+    null
+  );
+  console.log("TrackingId", targetedTrackingId);
+
+  console.log(editingOrder);
 
   const handleSaveEdit = async () => {
     if (!editingOrder) return;
     const loadingId = toast.loading("Saving...");
+
     try {
       setLoad(true);
-      // const adminToken = localStorage.getItem("token");
-      // const headers = {
-      //   headers: { Authorization: `Bearer ${adminToken}` },
-      // };
+      const adminToken = localStorage.getItem("token");
+      const headers = {
+        headers: { Authorization: `Bearer ${adminToken}` },
+      };
+
+      const { id: id, ...orderDataWithoutId } = editingOrder;
+      console.log(id);
+
       const res = await axios.put(
         `/updateByTrackingId/${targetedTrackingId}`,
-        editingOrder,
-        // headers
+        orderDataWithoutId,
+        headers
       );
-      
+
       console.log("Order updated:", res.data);
 
       setOrders(
@@ -335,7 +346,12 @@ const AllOrdersPage = () => {
                           className="text-blue-600 hover:text-blue-900 p-1 rounded"
                           title="Edit order"
                         >
-                          <Edit2 className="w-4 h-4" onClick={()=>setTargetedTrackingId(order.trackingId)}/>
+                          <Edit2
+                            className="w-4 h-4"
+                            onClick={() =>
+                              setTargetedTrackingId(order.trackingId)
+                            }
+                          />
                         </button>
                         <button
                           onClick={() =>
@@ -351,20 +367,20 @@ const AllOrdersPage = () => {
                     <td className="">
                       <div className="flex justify-center pr-6 max-md:pr-0">
                         <button
-                        key={order.id}
-                        className="bg-blue-900 cursor-pointer rounded-sm px-4 py-2 text-white text-sm font-medium"
-                        onClick={() => {
-                          setTargetedTrackingId(order.trackingId)
-                          getOrder(order.id);
-                        }}
-                      >
-                        View
-                      </button>
+                          key={order.id}
+                          className="bg-blue-900 cursor-pointer rounded-sm px-4 py-2 text-white text-sm font-medium"
+                          onClick={() => {
+                            setTargetedTrackingId(order.trackingId);
+                            getOrder(order.id);
+                          }}
+                        >
+                          View
+                        </button>
                       </div>
                     </td>
                     <td>
                       <div className="cursor-pointer flex justify-center">
-                        <LucideHistory/>
+                        <LucideHistory />
                       </div>
                     </td>
                   </tr>
@@ -549,7 +565,7 @@ const AllOrdersPage = () => {
                   </label>
                   <input
                     type="text"
-                    value={editingOrder.origin ?? ''}
+                    value={editingOrder.origin ?? ""}
                     onChange={(e) => handleEditChange("origin", e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
@@ -670,9 +686,9 @@ const AllOrdersPage = () => {
               </button>
               <button
                 onClick={() => {
-                          setTargetedTrackingId(editingOrder.trackingId)
-                          handleSaveEdit()
-                        }}
+                  setTargetedTrackingId(editingOrder.trackingId);
+                  handleSaveEdit();
+                }}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center space-x-2"
               >
                 <Save className="w-4 h-4" />
