@@ -95,6 +95,7 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({
               >
                 <option value="Pending">Pending</option>
                 <option value="In Transit">In Transit</option>
+                <option value="on hold">On Hold</option>
                 <option value="Delivered">Delivered</option>
               </select>
             </div>

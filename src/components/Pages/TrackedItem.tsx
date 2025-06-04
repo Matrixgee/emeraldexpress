@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { X, Package, MapPin, User } from "lucide-react";
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -40,6 +41,11 @@ const TrackedItem = () => {
 
   const currentStageIndex = getCurrentStageIndex();
 
+  const formatDateTime = (timestamp: any) => {
+    const date = new Date(timestamp);
+    return date.toLocaleString(); // You can also use .toLocaleDateString() or toLocaleTimeString()
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
@@ -75,6 +81,12 @@ const TrackedItem = () => {
             {/* Current Status Entry */}
             <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
               <div className="grid grid-cols-1 md:grid-cols-6 text-sm">
+                <div className="bg-gray-100 p-4 font-semibold border-b md:border-b-0 md:border-r border-gray-200">
+                  Date and Time
+                </div>
+                <div className="p-4 border-b md:border-b-0 border-gray-200">
+                  {formatDateTime(trackingData?.[0].createdAt)}
+                </div>
                 <div className="bg-gray-100 p-4 font-semibold border-b md:border-b-0 md:border-r border-gray-200">
                   Location
                 </div>
