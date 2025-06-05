@@ -1,6 +1,6 @@
 // TrackedItem.tsx
 
-import { X, Package, MapPin, User } from "lucide-react";
+import { X, Package } from "lucide-react";
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -47,8 +47,9 @@ const TRACKING_STAGES: Stage[] = [
   { id: 2, name: "Processing", key: "processing" },
   { id: 3, name: "Picked Up", key: "picked_up" },
   { id: 4, name: "In Transit", key: "in_transit" },
-  { id: 5, name: "Out for Delivery", key: "out_for_delivery" },
-  { id: 6, name: "Delivered", key: "delivered" },
+  { id: 5, name: "On Hold", key: "on_hold" }, // ✅ Added
+  { id: 6, name: "Out for Delivery", key: "out_for_delivery" },
+  { id: 7, name: "Delivered", key: "delivered" },
 ];
 
 // Helper Functions
@@ -68,6 +69,7 @@ const getStatusBadgeColor = (status: string): string => {
     in_transit: "bg-blue-100 text-blue-800",
     processing: "bg-yellow-100 text-yellow-800",
     pending: "bg-gray-100 text-gray-800",
+    on_hold: "bg-red-100 text-red-800", // ✅ Add this line
   };
 
   const normalized = status.toLowerCase().replace(/\s+/g, "_");
@@ -106,6 +108,7 @@ const InfoCard = ({
     <div className="p-4 space-y-3">{children}</div>
   </div>
 );
+console.log(InfoCard);
 
 const InfoField = ({
   label,
@@ -120,12 +123,15 @@ const InfoField = ({
   </div>
 );
 
+console.log(InfoField);
+
 const EmailField = ({ label, value }: { label: string; value: string }) => (
   <div>
     <div className="text-sm font-medium text-gray-600">{label}</div>
     <div className="text-blue-600 text-sm break-all">{value}</div>
   </div>
 );
+console.log(EmailField);
 
 const HistoryEntry = ({
   dateTime,
@@ -192,50 +198,130 @@ const HistoryEntry = ({
 );
 
 const ProgressBar = ({ currentStageIndex }: { currentStageIndex: number }) => (
-  <div className="w-full py-6 px-4 border-b-2 border-black bg-gray-50">
-    <h3 className="text-lg font-semibold mb-4 text-center">
-      Tracking Progress
-    </h3>
-    <div className="relative">
-      <div className="absolute top-5 left-0 right-0 h-1 bg-gray-300 mx-8" />
-      <div
-        className="absolute top-5 left-0 h-1 bg-blue-600 mx-8 transition-all duration-500"
-        style={{
-          width: `${(currentStageIndex / (TRACKING_STAGES.length - 1)) * 100}%`,
-        }}
-      />
-      <div className="relative flex justify-between items-center">
-        {TRACKING_STAGES.map((stage, index) => (
-          <div key={stage.id} className="flex flex-col items-center">
+  <div className="w-full py-4 sm:py-6 lg:py-8 px-3 sm:px-4 lg:px-6 bg-gradient-to-br from-slate-50 to-blue-50/30 border-b border-slate-200/60 shadow-sm">
+    <div className="max-w-4xl mx-auto">
+      <h3 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6 lg:mb-8 text-center text-slate-800 tracking-tight">
+        Tracking Progress
+      </h3>
+
+      <div className="relative mb-4 sm:mb-6 lg:mb-8">
+        {/* Mobile: Horizontal scroll container for many stages */}
+        <div
+          className={`${
+            TRACKING_STAGES.length > 4 ? "overflow-x-auto pb-2" : ""
+          } -mx-2 px-2`}
+        >
+          <div
+            className={`${
+              TRACKING_STAGES.length > 4 ? "min-w-max" : "w-full"
+            } relative`}
+          >
+            {/* Background line - responsive margins */}
+            <div className="absolute top-4 sm:top-5 lg:top-6 left-0 right-0 h-1 sm:h-1.5 lg:h-2 bg-gradient-to-r from-slate-200 to-slate-300 rounded-full mx-4 sm:mx-6 lg:mx-10 shadow-inner" />
+
+            {/* Progress line with gradient - responsive */}
             <div
-              className={`w-10 h-10 rounded-full border-2 flex items-center justify-center text-sm font-semibold ${
-                index <= currentStageIndex
-                  ? "bg-blue-600 border-blue-600 text-white"
-                  : "bg-white border-gray-300 text-gray-500"
-              }`}
-            >
-              {index + 1}
-            </div>
+              className="absolute top-4 sm:top-5 lg:top-6 left-0 h-1 sm:h-1.5 lg:h-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full mx-4 sm:mx-6 lg:mx-10 transition-all duration-700 ease-out shadow-md"
+              style={{
+                width: `calc((${
+                  (currentStageIndex / (TRACKING_STAGES.length - 1)) * 100
+                }% * (100% - 2rem)) / 100% + 1rem)`,
+              }}
+            />
+
+            {/* Stage indicators - responsive spacing */}
             <div
-              className={`mt-2 text-xs text-center max-w-[80px] ${
-                index <= currentStageIndex
-                  ? "text-blue-600 font-semibold"
-                  : "text-gray-500"
-              }`}
+              className={`
+              relative flex items-center px-1 sm:px-2 lg:px-4
+              ${
+                TRACKING_STAGES.length > 4
+                  ? "justify-start gap-4 sm:gap-6 lg:gap-8"
+                  : "justify-between"
+              }
+            `}
             >
-              {stage.name}
+              {TRACKING_STAGES.map((stage, index) => (
+                <div
+                  key={stage.id}
+                  className="flex flex-col items-center group flex-shrink-0"
+                >
+                  {/* Circle with responsive sizing */}
+                  <div
+                    className={`
+                      relative w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full border-2 sm:border-3 
+                      flex items-center justify-center text-xs sm:text-sm font-bold 
+                      transition-all duration-500 transform hover:scale-105
+                      ${
+                        index <= currentStageIndex
+                          ? "bg-gradient-to-br from-blue-500 to-blue-600 border-blue-500 text-white shadow-lg shadow-blue-500/25"
+                          : index === currentStageIndex + 1
+                          ? "bg-white border-blue-300 text-blue-400 shadow-md ring-1 sm:ring-2 ring-blue-200"
+                          : "bg-white border-slate-300 text-slate-400 shadow-sm hover:border-slate-400"
+                      }
+                    `}
+                  >
+                    {index < currentStageIndex ? (
+                      <svg
+                        className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    ) : (
+                      <span className="text-xs sm:text-sm">{index + 1}</span>
+                    )}
+
+                    {/* Pulse animation for current stage */}
+                    {index === currentStageIndex && (
+                      <div className="absolute inset-0 rounded-full bg-blue-500 animate-ping opacity-20" />
+                    )}
+                  </div>
+
+                  {/* Stage name with responsive typography */}
+                  <div
+                    className={`
+                      mt-1.5 sm:mt-2 lg:mt-3 text-xs sm:text-xs lg:text-sm text-center 
+                      ${
+                        TRACKING_STAGES.length > 4
+                          ? "w-16 sm:w-20 lg:w-24"
+                          : "max-w-[60px] sm:max-w-[70px] lg:max-w-[90px]"
+                      }
+                      leading-tight transition-all duration-300 break-words hyphens-auto
+                      ${
+                        index <= currentStageIndex
+                          ? "text-blue-700 font-semibold"
+                          : index === currentStageIndex + 1
+                          ? "text-blue-500 font-medium"
+                          : "text-slate-500 group-hover:text-slate-600"
+                      }
+                    `}
+                  >
+                    {stage.name}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-        ))}
+        </div>
       </div>
-    </div>
-    <div className="text-center mt-4">
-      <span className="text-sm font-medium text-gray-700">
-        Current Status:{" "}
-        <span className="text-blue-600 capitalize">
-          {TRACKING_STAGES[currentStageIndex]?.name}
-        </span>
-      </span>
+
+      {/* Current status with responsive styling */}
+      <div className="text-center">
+        <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-white/80 border border-blue-200/50 shadow-sm backdrop-blur-sm">
+          <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-blue-500 rounded-full animate-pulse" />
+          <span className="text-xs sm:text-sm font-medium text-slate-700">
+            Current Status:
+          </span>
+          <span className="text-xs sm:text-sm font-bold text-blue-600 capitalize">
+            {TRACKING_STAGES[currentStageIndex]?.name}
+          </span>
+        </div>
+      </div>
     </div>
   </div>
 );
@@ -294,19 +380,22 @@ const TrackedItem = () => {
                 </h2>
               </div>
               <div className="space-y-4">
-                <HistoryEntry
-                  dateTime={formatDateTime(currentTracking.createdAt)}
-                  location={currentTracking.currentLocation}
-                  status={currentTracking.orderStatus}
-                  updatedBy={currentTracking.updatedBy}
-                  remarks={currentTracking.comment}
-                />
-                <HistoryEntry
-                  location={currentTracking.destination}
-                  status="In Transit"
-                  updatedBy="System Update"
-                  remarks="Package departed facility"
-                />
+                {[...trackingData].reverse().map((entry, index) => {
+                  const currentStageIndex = getCurrentStageIndex(entry.stage);
+
+                  return (
+                    <HistoryEntry
+                      key={index}
+                      dateTime={formatDateTime(entry.createdAt)}
+                      location={entry.currentLocation}
+                      status={
+                        TRACKING_STAGES[currentStageIndex]?.name || "Unknown"
+                      }
+                      updatedBy={entry.updatedBy}
+                      remarks={entry.comment}
+                    />
+                  );
+                })}
               </div>
             </div>
 
@@ -317,7 +406,7 @@ const TrackedItem = () => {
                   Shipment Details
                 </h2>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <InfoCard
                   title="Sender Details"
                   icon={User}
@@ -360,13 +449,13 @@ const TrackedItem = () => {
                     value={currentTracking.receiverEmail}
                   />
                 </InfoCard>
-              </div>
+              </div> */}
 
               {/* Progress */}
               <ProgressBar currentStageIndex={currentStageIndex} />
 
               {/* Package */}
-              <InfoCard
+              {/* <InfoCard
                 title="Package Information"
                 icon={Package}
                 bgColor="bg-yellow-50"
@@ -399,7 +488,7 @@ const TrackedItem = () => {
                     value={currentTracking.orderStatus}
                   />
                 </div>
-              </InfoCard>
+              </InfoCard> */}
             </div>
           </div>
         );
