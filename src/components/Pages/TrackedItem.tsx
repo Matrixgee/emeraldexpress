@@ -294,19 +294,22 @@ const TrackedItem = () => {
                 </h2>
               </div>
               <div className="space-y-4">
-                <HistoryEntry
-                  dateTime={formatDateTime(currentTracking.createdAt)}
-                  location={currentTracking.currentLocation}
-                  status={currentTracking.orderStatus}
-                  updatedBy={currentTracking.updatedBy}
-                  remarks={currentTracking.comment}
-                />
-                <HistoryEntry
-                  location={currentTracking.destination}
-                  status="In Transit"
-                  updatedBy="System Update"
-                  remarks="Package departed facility"
-                />
+                {[...trackingData].reverse().map((entry, index) => {
+                  const currentStageIndex = getCurrentStageIndex(entry.stage);
+
+                  return (
+                    <HistoryEntry
+                      key={index}
+                      dateTime={formatDateTime(entry.createdAt)}
+                      location={entry.currentLocation}
+                      status={
+                        TRACKING_STAGES[currentStageIndex]?.name || "Unknown"
+                      }
+                      updatedBy={entry.updatedBy}
+                      remarks={entry.comment}
+                    />
+                  );
+                })}
               </div>
             </div>
 

@@ -19,7 +19,8 @@ type Order = {
   carrier: string;
   totalFreight: string;
   trackingId: string;
-
+  createdAt: string;
+  updatedAt: string;
   comment: string;
 };
 
@@ -43,7 +44,6 @@ interface oneOrderDetailsProps {
 const AllOrdersPage = () => {
   const statusStages = [
     { stage: 0, name: "Order Placed", percentage: 0 },
-
     { stage: 1, name: "Processing", percentage: 25 },
     { stage: 2, name: "on Hold", percentage: 28 },
     { stage: 3, name: "In Transit", percentage: 50 },
@@ -150,8 +150,10 @@ const AllOrdersPage = () => {
         headers: { Authorization: `Bearer ${adminToken}` },
       };
 
-      const { id: id, ...orderDataWithoutId } = editingOrder;
-      console.log(id);
+      // Exclude id, createdAt, updatedAt from payload
+      const { id, createdAt, updatedAt, ...orderDataWithoutId } = editingOrder;
+
+      console.log(id, createdAt, updatedAt);
 
       const res = await axios.put(
         `/updateByTrackingId/${targetedTrackingId}`,
