@@ -21,7 +21,6 @@ type Order = {
   trackingId: string;
 
   comment: string;
-
 };
 
 interface OrderResponse {
@@ -44,10 +43,12 @@ interface oneOrderDetailsProps {
 const AllOrdersPage = () => {
   const statusStages = [
     { stage: 0, name: "Order Placed", percentage: 0 },
+
     { stage: 1, name: "Processing", percentage: 25 },
-    { stage: 2, name: "In Transit", percentage: 50 },
-    { stage: 3, name: "Out for Delivery", percentage: 75 },
-    { stage: 4, name: "Delivered", percentage: 100 },
+    { stage: 2, name: "on Hold", percentage: 28 },
+    { stage: 3, name: "In Transit", percentage: 50 },
+    { stage: 4, name: "Out for Delivery", percentage: 75 },
+    { stage: 5, name: "Delivered", percentage: 100 },
   ];
 
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -137,7 +138,6 @@ const AllOrdersPage = () => {
 
   console.log(editingOrder);
 
-
   const handleSaveEdit = async () => {
     if (!editingOrder) return;
     const loadingId = toast.loading("Saving...");
@@ -158,7 +158,6 @@ const AllOrdersPage = () => {
         orderDataWithoutId,
         headers
       );
-
 
       console.log("Order updated:", res.data);
 
@@ -351,14 +350,12 @@ const AllOrdersPage = () => {
                           className="text-blue-600 hover:text-blue-900 p-1 rounded"
                           title="Edit order"
                         >
-
                           <Edit2
                             className="w-4 h-4"
                             onClick={() =>
                               setTargetedTrackingId(order.trackingId)
                             }
                           />
-
                         </button>
                         <button
                           onClick={() =>
@@ -374,7 +371,6 @@ const AllOrdersPage = () => {
                     <td className="">
                       <div className="flex justify-center pr-6 max-md:pr-0">
                         <button
-
                           key={order.id}
                           className="bg-blue-900 cursor-pointer rounded-sm px-4 py-2 text-white text-sm font-medium"
                           onClick={() => {
@@ -384,14 +380,11 @@ const AllOrdersPage = () => {
                         >
                           View
                         </button>
-
                       </div>
                     </td>
                     <td>
                       <div className="cursor-pointer flex justify-center">
-
                         <LucideHistory />
-
                       </div>
                     </td>
                   </tr>
@@ -576,9 +569,7 @@ const AllOrdersPage = () => {
                   </label>
                   <input
                     type="text"
-
                     value={editingOrder.origin ?? ""}
-
                     onChange={(e) => handleEditChange("origin", e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
@@ -699,11 +690,9 @@ const AllOrdersPage = () => {
               </button>
               <button
                 onClick={() => {
-
                   setTargetedTrackingId(editingOrder.trackingId);
                   handleSaveEdit();
                 }}
-
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center space-x-2"
               >
                 <Save className="w-4 h-4" />
