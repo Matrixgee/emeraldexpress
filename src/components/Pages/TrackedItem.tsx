@@ -380,7 +380,7 @@ const TrackedItem = () => {
                 </h2>
               </div>
               <div className="space-y-4">
-                {[...trackingData].reverse().map((entry, index) => {
+                {[...trackingData].map((entry, index) => {
                   const currentStageIndex = getCurrentStageIndex(entry.stage);
 
                   return (
